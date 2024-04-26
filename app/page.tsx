@@ -15,8 +15,7 @@ import AddressForm from "./AddressForm";
 // recreating the Stripe object on every render.
 // This is your test publishable API key.
 const stripePromise = loadStripe(
-  // "pk_test_51NQvfCHMbVvEMifIhSjLofAeUyJdGRgHfkH8UOuZ2aiZ6N7ofiXnQA4SdJEAwcdzYD0ZJI6vtecTMpJvDqNNXOfu00eGNjjKDl"
-  "pk_live_51NQvfCHMbVvEMifIes0wH9TI1nZdDNv5HrwzMXxlU0FEf5nHC2EM4OrWHtbUimYlhpD4Xv9xEY8t1x8mz5HJbSNI00TDvNjTCA"
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
   // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
 );
 

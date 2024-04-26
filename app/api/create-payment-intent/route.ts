@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(
-  // This is your test secret API key.
-  "sk_test_51NQvfCHMbVvEMifIvrazCziwS0x2gxFZIczT1Dd4DErgLJF6XHM0pBULegfrR6T1qSKtBHZETWE5dnionhTie2Fl00imiyZiiG"
-);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: NextRequest) {
   const data = await request.json();
