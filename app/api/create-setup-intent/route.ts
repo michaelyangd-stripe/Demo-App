@@ -8,6 +8,10 @@ export async function POST(request: NextRequest) {
 
   const customer = await stripe.customers.create({
     email: "didehgns@gmail.com",
+    metadata: {
+      userId: "61611",
+    },
+    name: "alberto",
   });
 
   // EXAMPLE REQUEST FROM RARE

@@ -60,7 +60,7 @@ export default function App() {
     // on_behalf_of: "acct_1NRIYOBOLg168MLu",
   };
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto lg:h-dvh lg:flex-row lg:overflow-hidden">
+    <div className="flex h-full w-full flex-col lg:h-dvh lg:flex-row overflow-auto">
       <div className="mx-auto max-w-3xl w-full mt-20">
         <div className="relative flex h-full w-full flex-col gap-y-2 lg:mx-auto">
           {clientSecret && (
