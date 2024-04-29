@@ -98,6 +98,13 @@ export default function CheckoutForm() {
 
   const paymentElementOptions: StripePaymentElementOptions = {
     layout: "tabs",
+    terms: { card: "never" },
+    defaultValues: {
+      billingDetails: {
+        name: "test",
+        email: "test@test.com",
+      },
+    },
   };
 
   return (
@@ -106,7 +113,7 @@ export default function CheckoutForm() {
       <PaymentElement id="payment-element" options={paymentElementOptions} />
 
       {/* Show any error or success messages */}
-      {message && <div id="payment-message">{message}</div>}
+      {/* {message && <div id="payment-message">{message}</div>} */}
       <button
         disabled={isLoading || !stripe || !elements}
         id="submit"

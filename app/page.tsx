@@ -80,7 +80,7 @@ export default function App() {
                 <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
                   Shipping
                 </h2>
-                <AddressForm />
+                {/* <AddressForm /> */}
               </div>
               <div className="rounded-lg bg-[#25222c] px-4 py-5 lg:mb-0 lg:rounded-b-none lg:rounded-t-lg lg:px-6 ">
                 <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
