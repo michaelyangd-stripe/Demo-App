@@ -14,7 +14,7 @@ import { FormProvider } from "react-hook-form";
 import { useConfigForm } from "./hooks/useConfigForm";
 import { ElementsForm } from "./ElementsForm";
 import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Link, Pencil } from "lucide-react";
 import { useAppContext } from "./hooks/useAppContext";
 import { useMediaQuery } from "./hooks/useMediaQuery";
 import {
@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
@@ -119,26 +120,29 @@ export default function App() {
           <div className="flex h-full w-full flex-col gap-y-2 lg:mx-auto">
             {clientSecret && (
               <>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <div className="space-y-1">
                     <h4 className="text-sm font-medium leading-none">
                       Client Secret
                     </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {clientSecret}
-                    </p>
+                    <p className="text-xs">{clientSecret}</p>
                   </div>
                   <div className="space-y-1">
                     <h4 className="text-sm font-medium leading-none">Intent</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {configFormData?.intentType}
-                      {intentId && (
-                        <>
-                          :{" "}
-                          <Button variant="link" className="px-0">
+                    <p className="text-xs">
+                      {configFormData?.intentType === "deferred_intent" ? (
+                        <Badge>Deferred Intent</Badge>
+                      ) : (
+                        <a
+                          href={`https://go/o/${intentId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Badge>
+                            <Link className="w-3 h-3 mr-1" />
                             {intentId}
-                          </Button>
-                        </>
+                          </Badge>
+                        </a>
                       )}
                     </p>
                   </div>
