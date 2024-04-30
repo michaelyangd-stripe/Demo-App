@@ -35,7 +35,7 @@ const stripePromise = loadStripe(
   // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
 );
 
-export function DrawerDialog() {
+const DrawerDialog = () => {
   const [isOpen, setIsOpen] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 1000px)");
 
@@ -71,7 +71,7 @@ export function DrawerDialog() {
       </DrawerContent>
     </Drawer>
   );
-}
+};
 
 export default function App() {
   const methods = useConfigForm();
