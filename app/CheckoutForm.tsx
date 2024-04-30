@@ -102,7 +102,7 @@ export default function CheckoutForm() {
     defaultValues: {
       billingDetails: {
         name: "test",
-        email: "test@test.com",
+        email: "didehgns@gmail.com",
       },
     },
   };

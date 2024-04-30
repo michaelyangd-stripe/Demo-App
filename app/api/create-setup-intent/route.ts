@@ -6,13 +6,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 export async function POST(request: NextRequest) {
   const data = await request.json();
 
-  const customer = await stripe.customers.create({
-    email: "didehgns@gmail.com",
-    metadata: {
-      userId: "61611",
-    },
-    name: "alberto",
-  });
+  const customer = data.createCustomer
+    ? await stripe.customers.create({
+        email: data.customerEmail,
+        metadata: {
+          userId: "1",
+        },
+        name: "alberto",
+      })
+    : undefined;
 
   // EXAMPLE REQUEST FROM RARE
   // {
@@ -33,7 +35,7 @@ export async function POST(request: NextRequest) {
   // }
   const setupIntent = await stripe.setupIntents.create(
     {
-      customer: customer.id,
+      ...(customer && { customer: customer.id }),
       payment_method_options: {
         us_bank_account: {
           financial_connections: {
@@ -53,6 +55,9 @@ export async function POST(request: NextRequest) {
   );
   // console.timeEnd("pi");
   return new NextResponse(
-    JSON.stringify({ clientSecret: setupIntent.client_secret })
+    JSON.stringify({
+      id: setupIntent.id,
+      clientSecret: setupIntent.client_secret,
+    })
   );
 }
