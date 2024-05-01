@@ -12,14 +12,20 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import CheckoutForm from "./CheckoutForm";
 import { FormProvider } from "react-hook-form";
 import { useConfigForm } from "./hooks/useConfigForm";
-import { ElementsForm } from "./ElementsForm";
+import { ElementsForm, startSession } from "./ElementsForm";
 import { Button } from "@/components/ui/button";
-import { Link, Pencil } from "lucide-react";
+import { Link, Loader2, Pencil, RefreshCw } from "lucide-react";
 import { useAppContext } from "./hooks/useAppContext";
 import { useMediaQuery } from "./hooks/useMediaQuery";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import AddressForm from "./AddressForm";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
@@ -37,8 +43,8 @@ const DrawerDialog = () => {
     return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button>
-            <Pencil className="w-4 h-4 mr-2" />
+          <Button className="gap-x-2">
+            <Pencil className="w-4 h-4" />
             Edit
           </Button>
         </DialogTrigger>
@@ -68,7 +74,9 @@ export default function App() {
   const methods = useConfigForm();
   const {
     state: { configFormData, clientSecret, intentId },
+    updateState,
   } = useAppContext();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const appearance: Appearance = {
     theme: "flat",
@@ -85,6 +93,18 @@ export default function App() {
   //   // on_behalf_of: "acct_1NRIYOBOLg168MLu",
   // };
 
+  const onRefresh = async () => {
+    if (configFormData) {
+      setIsRefreshing(true);
+      const { id, clientSecret } = await startSession(configFormData);
+      updateState({
+        configFormData: configFormData,
+        intentId: id,
+        clientSecret: clientSecret,
+      });
+      setIsRefreshing(false);
+    }
+  };
   const options: StripeElementsOptions = clientSecret
     ? {
         clientSecret,
@@ -104,7 +124,28 @@ export default function App() {
             <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
               Elements Demo
             </h1>
-            <DrawerDialog />
+            <div className="flex flex-row gap-x-2">
+              {/* Only show refresh button if there's a valid session */}
+              {clientSecret && (
+                <TooltipProvider>
+                  <Tooltip delayDuration={200}>
+                    <TooltipTrigger>
+                      <Button onClick={onRefresh} disabled={isRefreshing}>
+                        {isRefreshing ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <RefreshCw className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>New session with same settings</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+              <DrawerDialog />
+            </div>
           </div>
           <div className="flex h-full w-full flex-col gap-y-2 lg:mx-auto">
             {clientSecret && (

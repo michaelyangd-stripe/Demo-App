@@ -30,24 +30,20 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-const startSession = async (
-  type: ConfigFormData["intentType"],
-  paymentMethodTypes: string[],
-  createCustomer: boolean,
-  customerEmail?: string
-) => {
+export const startSession = async (configFormData: ConfigFormData) => {
   const endpoint =
-    type === "payment_intent"
+    configFormData.intentType === "payment_intent"
       ? "/api/create-payment-intent"
       : "/api/create-setup-intent";
+
   return fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       items: [{ id: "xl-tshirt", amount: 1000 }],
-      createCustomer,
-      customerEmail,
-      paymentMethodTypes,
+      createCustomer: configFormData.createCustomer,
+      customerEmail: configFormData.customerEmail,
+      paymentMethodTypes: configFormData.paymentMethodTypes,
     }),
   }).then((res) => res.json());
 };
@@ -57,12 +53,7 @@ export function ElementsForm({ onComplete }: { onComplete: () => void }) {
   const { updateState } = useAppContext();
 
   async function onSubmit(values: z.infer<typeof ConfigFormDataSchema>) {
-    const { id, clientSecret } = await startSession(
-      values.intentType,
-      values.paymentMethodTypes,
-      values.createCustomer,
-      values.customerEmail
-    );
+    const { id, clientSecret } = await startSession(values);
     updateState({
       configFormData: form.getValues(),
       intentId: id,
