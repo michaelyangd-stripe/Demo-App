@@ -57,7 +57,6 @@ export function ElementsForm({ onComplete }: { onComplete: () => void }) {
   const { updateState } = useAppContext();
 
   async function onSubmit(values: z.infer<typeof ConfigFormDataSchema>) {
-    console.log(values);
     const { id, clientSecret } = await startSession(
       values.intentType,
       values.paymentMethodTypes,
@@ -157,7 +156,7 @@ export function ElementsForm({ onComplete }: { onComplete: () => void }) {
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="...@gmail.com"
+                          placeholder="michaelyangd+123@stripe.com"
                           {...field}
                           disabled={!form.getValues("createCustomer")}
                         />
@@ -203,6 +202,64 @@ export function ElementsForm({ onComplete }: { onComplete: () => void }) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-y-6 h-96">
+                <FormField
+                  control={form.control}
+                  name="elementTypes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Elements</FormLabel>
+                      <FormControl>
+                        <ToggleGroup
+                          type="multiple"
+                          className="justify-start"
+                          value={field.value}
+                          onValueChange={(value) => {
+                            if (value) field.onChange(value);
+                          }}
+                        >
+                          <ToggleGroupItem value="linkAuthentication">
+                            LinkAuthentication
+                          </ToggleGroupItem>
+                          <ToggleGroupItem value="address">
+                            Address
+                          </ToggleGroupItem>
+                          <ToggleGroupItem value="payment">
+                            Payment
+                          </ToggleGroupItem>
+                        </ToggleGroup>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="billingEmail"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Billing Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="michaelyangd+123@stripe.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="billingName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Billing Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Michael" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="performClientsideValidation"

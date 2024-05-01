@@ -7,7 +7,6 @@ import {
 } from "@stripe/react-stripe-js";
 
 import { StripePaymentElementOptions } from "@stripe/stripe-js";
-import { useConfigFormContext } from "./hooks/useConfigForm";
 import { useAppContext } from "./hooks/useAppContext";
 
 export default function CheckoutForm() {
@@ -108,16 +107,19 @@ export default function CheckoutForm() {
     layout: "tabs",
     terms: { card: "never" },
     defaultValues: {
-      // billingDetails: {
-      //   name: "test",
-      //   email: "didehgns@gmail.com",
-      // },
+      billingDetails: {
+        ...(configFormData?.billingName && {
+          name: configFormData?.billingName,
+        }),
+        ...(configFormData?.billingEmail && {
+          email: configFormData?.billingEmail,
+        }),
+      },
     },
   };
 
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
-      {/* <LinkAuthenticationElement /> */}
       <PaymentElement id="payment-element" options={paymentElementOptions} />
 
       {/* Show any error or success messages */}

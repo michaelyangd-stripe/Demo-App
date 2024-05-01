@@ -6,7 +6,7 @@ import {
   StripeElementsOptions,
   loadStripe,
 } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
+import { Elements, LinkAuthenticationElement } from "@stripe/react-stripe-js";
 import { Separator } from "@/components/ui/separator";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import CheckoutForm from "./CheckoutForm";
@@ -19,6 +19,7 @@ import { useAppContext } from "./hooks/useAppContext";
 import { useMediaQuery } from "./hooks/useMediaQuery";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import AddressForm from "./AddressForm";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
@@ -72,10 +73,8 @@ export default function App() {
   const appearance: Appearance = {
     theme: "flat",
     variables: {
-      // colorText: "#fff",
-      // colorBackground: "#38363F",
-      // colorText: "#ffffff",
-      // colorBackground: "#000",
+      colorText: "#fff",
+      colorBackground: "#38363F",
     },
   };
   // const options: StripeElementsOptions = {
@@ -111,28 +110,26 @@ export default function App() {
             {clientSecret && (
               <>
                 <div className="space-y-4">
-                  <div className="space-y-1">
-                    <h4 className="text-xs text-gray-500">Client Secret</h4>
-                    <p className="text-xs">{clientSecret}</p>
+                  <div className="space-y-1 text-xs">
+                    <h4 className="text-gray-500">Client Secret</h4>
+                    <p>{clientSecret}</p>
                   </div>
-                  <div className="space-y-1">
-                    <h4 className="text-xs text-gray-500">Intent</h4>
-                    <p className="text-xs">
-                      {configFormData?.intentType === "deferred_intent" ? (
-                        <Badge>Deferred Intent</Badge>
-                      ) : (
-                        <a
-                          href={`https://go/o/${intentId}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Badge>
-                            <Link className="w-3 h-3 mr-1" />
-                            {intentId}
-                          </Badge>
-                        </a>
-                      )}
-                    </p>
+                  <div className="space-y-1 text-xs">
+                    <h4 className="text-gray-500">Intent</h4>
+                    {configFormData?.intentType === "deferred_intent" ? (
+                      <Badge>Deferred Intent</Badge>
+                    ) : (
+                      <a
+                        href={`https://go/o/${intentId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Badge>
+                          <Link className="w-3 h-3 mr-1" />
+                          {intentId}
+                        </Badge>
+                      </a>
+                    )}
                   </div>
                 </div>
                 <Separator className="my-2" />
@@ -141,29 +138,32 @@ export default function App() {
                   stripe={stripePromise}
                   key={clientSecret}
                 >
-                  <div className="rounded-lg bg-[#25222c] px-4 py-5">
-                    <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
-                      Contact
-                    </h2>
-                    <p className="fs-mask text-16 font-medium text-[#9d9aa4] sm:text-16">
-                      Phone:{" "}
-                    </p>
-                    <p className="fs-mask text-16 font-medium text-[#9d9aa4] sm:text-16">
-                      Email:{" "}
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-[#25222c] px-4 py-5">
-                    <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
-                      Shipping
-                    </h2>
-                    {/* <AddressForm /> */}
-                  </div>
-                  <div className="rounded-lg bg-[#25222c] px-4 py-5">
-                    <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
-                      Payment Methods
-                    </h2>
-                    <CheckoutForm />
-                  </div>
+                  {configFormData?.elementTypes.includes(
+                    "linkAuthentication"
+                  ) && (
+                    <div className="rounded-lg bg-[#25222c] px-4 py-5">
+                      <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
+                        LinkAuthentication Element
+                      </h2>
+                      <LinkAuthenticationElement />
+                    </div>
+                  )}
+                  {configFormData?.elementTypes.includes("address") && (
+                    <div className="rounded-lg bg-[#25222c] px-4 py-5">
+                      <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
+                        Address Element
+                      </h2>
+                      <AddressForm />
+                    </div>
+                  )}
+                  {configFormData?.elementTypes.includes("payment") && (
+                    <div className="rounded-lg bg-[#25222c] px-4 py-5">
+                      <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
+                        Payment Element
+                      </h2>
+                      <CheckoutForm />
+                    </div>
+                  )}
                 </Elements>
               </>
             )}
