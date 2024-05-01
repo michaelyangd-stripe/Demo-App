@@ -23,9 +23,7 @@ export async function POST(request: NextRequest) {
       ...(customer && { customer: customer.id }),
       amount: 1000,
       currency: "usd",
-      automatic_payment_methods: {
-        enabled: true,
-      },
+      payment_method_types: data.paymentMethodTypes,
       // transfer_data: {
       //   destination: "acct_1NRIYOBOLg168MLu",
       // },

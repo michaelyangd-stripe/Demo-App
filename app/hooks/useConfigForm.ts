@@ -10,6 +10,8 @@ export const ConfigFormDataSchema = z.object({
   }),
   createCustomer: z.boolean(),
   customerEmail: z.string().email().optional().or(z.literal("")),
+  performClientsideValidation: z.boolean(),
+  paymentMethodTypes: z.string().array(),
 });
 
 export type ConfigFormData = z.infer<typeof ConfigFormDataSchema>;
@@ -21,6 +23,8 @@ export function useConfigForm() {
       intentType: "payment_intent",
       createCustomer: true,
       customerEmail: "",
+      performClientsideValidation: false,
+      paymentMethodTypes: ["card", "us_bank_account"],
     },
   });
   return form;

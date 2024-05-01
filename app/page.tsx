@@ -17,14 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Link, Pencil } from "lucide-react";
 import { useAppContext } from "./hooks/useAppContext";
 import { useMediaQuery } from "./hooks/useMediaQuery";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
@@ -48,10 +41,7 @@ const DrawerDialog = () => {
             Edit
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Configuration</DialogTitle>
-          </DialogHeader>
+        <DialogContent>
           <ElementsForm onComplete={() => setIsOpen(false)} />
         </DialogContent>
       </Dialog>
@@ -66,7 +56,7 @@ const DrawerDialog = () => {
           Edit
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="py-4 px-4">
+      <DrawerContent className="pb-4 px-4">
         <ElementsForm onComplete={() => setIsOpen(false)} />
       </DrawerContent>
     </Drawer>
@@ -122,13 +112,11 @@ export default function App() {
               <>
                 <div className="space-y-4">
                   <div className="space-y-1">
-                    <h4 className="text-sm font-medium leading-none">
-                      Client Secret
-                    </h4>
+                    <h4 className="text-xs text-gray-500">Client Secret</h4>
                     <p className="text-xs">{clientSecret}</p>
                   </div>
                   <div className="space-y-1">
-                    <h4 className="text-sm font-medium leading-none">Intent</h4>
+                    <h4 className="text-xs text-gray-500">Intent</h4>
                     <p className="text-xs">
                       {configFormData?.intentType === "deferred_intent" ? (
                         <Badge>Deferred Intent</Badge>

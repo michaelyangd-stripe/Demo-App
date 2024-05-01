@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
           },
         },
       },
-      payment_method_types: ["card", "us_bank_account"],
+      payment_method_types: data.paymentMethodTypes,
       // transfer_data: {
       //   destination: "acct_1NRIYOBOLg168MLu",
       // },
