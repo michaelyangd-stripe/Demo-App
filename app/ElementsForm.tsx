@@ -78,7 +78,22 @@ export function ElementsForm({ onComplete }: { onComplete: () => void }) {
                   Variables used on the server-side
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-col gap-y-6 h-96">
+              <CardContent className="flex flex-col gap-y-6 h-[30rem] overflow-auto">
+                <FormField
+                  control={form.control}
+                  name="livemode"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col gap-y-1">
+                      <FormLabel>Livemode</FormLabel>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="intentType"

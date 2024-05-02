@@ -15,6 +15,7 @@ export const ConfigFormDataSchema = z.object({
   billingName: z.string().optional().or(z.literal("")),
   performClientsideValidation: z.boolean(),
   paymentMethodTypes: z.string().array(),
+  livemode: z.boolean(),
 });
 
 export type ConfigFormData = z.infer<typeof ConfigFormDataSchema>;
@@ -31,6 +32,7 @@ export function useConfigForm() {
       billingName: "Michael",
       performClientsideValidation: false,
       paymentMethodTypes: ["card", "us_bank_account"],
+      livemode: true,
     },
   });
   return form;

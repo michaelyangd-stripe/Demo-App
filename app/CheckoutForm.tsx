@@ -3,7 +3,6 @@ import {
   PaymentElement,
   useStripe,
   useElements,
-  LinkAuthenticationElement,
 } from "@stripe/react-stripe-js";
 
 import { StripePaymentElementOptions } from "@stripe/stripe-js";

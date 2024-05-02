@@ -6,7 +6,11 @@ import {
   StripeElementsOptions,
   loadStripe,
 } from "@stripe/stripe-js";
-import { Elements, LinkAuthenticationElement } from "@stripe/react-stripe-js";
+import {
+  AddressElement,
+  Elements,
+  LinkAuthenticationElement,
+} from "@stripe/react-stripe-js";
 import { Separator } from "@/components/ui/separator";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import CheckoutForm from "./CheckoutForm";
@@ -19,7 +23,6 @@ import { useAppContext } from "./hooks/useAppContext";
 import { useMediaQuery } from "./hooks/useMediaQuery";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import AddressForm from "./AddressForm";
 import {
   Tooltip,
   TooltipContent,
@@ -30,8 +33,13 @@ import {
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
 // This is your test publishable API key.
-const stripePromise = loadStripe(
+const stripePromiseLivemode = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
+);
+
+const stripePromiseTestmode = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_TEST_PUBLISHABLE_KEY!
   // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
 );
 
@@ -129,7 +137,7 @@ export default function App() {
               {clientSecret && (
                 <TooltipProvider>
                   <Tooltip delayDuration={200}>
-                    <TooltipTrigger>
+                    <TooltipTrigger asChild>
                       <Button onClick={onRefresh} disabled={isRefreshing}>
                         {isRefreshing ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -176,7 +184,11 @@ export default function App() {
                 <Separator className="my-2" />
                 <Elements
                   options={options}
-                  stripe={stripePromise}
+                  stripe={
+                    configFormData?.livemode
+                      ? stripePromiseLivemode
+                      : stripePromiseTestmode
+                  }
                   key={clientSecret}
                 >
                   {configFormData?.elementTypes.includes(
@@ -194,7 +206,7 @@ export default function App() {
                       <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
                         Address Element
                       </h2>
-                      <AddressForm />
+                      <AddressElement options={{ mode: "shipping" }} />
                     </div>
                   )}
                   {configFormData?.elementTypes.includes("payment") && (
