@@ -44,6 +44,7 @@ export const startSession = async (configFormData: ConfigFormData) => {
       createCustomer: configFormData.createCustomer,
       customerEmail: configFormData.customerEmail,
       paymentMethodTypes: configFormData.paymentMethodTypes,
+      livemode: configFormData.livemode,
     }),
   }).then((res) => res.json());
 };

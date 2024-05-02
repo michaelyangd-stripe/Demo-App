@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Appearance,
   StripeElementsOptions,
@@ -42,7 +42,6 @@ const stripePromiseTestmode = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_TEST_PUBLISHABLE_KEY!
   // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
 );
-
 const DrawerDialog = () => {
   const [isOpen, setIsOpen] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 1000px)");

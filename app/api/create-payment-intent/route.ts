@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
       ? process.env.STRIPE_SECRET_KEY!
       : process.env.STRIPE_TEST_SECRET_KEY!
   );
-
+  console.log(data.livemode);
   const customer = data.createCustomer
     ? await stripe.customers.create({
         email: data.customerEmail,
@@ -27,6 +27,12 @@ export async function POST(request: NextRequest) {
       amount: 1000,
       currency: "usd",
       payment_method_types: data.paymentMethodTypes,
+      // payment_method_data: {
+      //   type: "us_bank_account",
+      //   billing_details: {
+      //     email: "",
+      //   },
+      // },
       // transfer_data: {
       //   destination: "acct_1NRIYOBOLg168MLu",
       // },
