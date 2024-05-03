@@ -101,7 +101,7 @@ export function ElementsForm({
                               <RadioGroupItem value="deferred_intent" />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              Deferred Intent
+                              Deferred Intent (payment)
                             </FormLabel>
                           </FormItem>
                         </RadioGroup>
