@@ -38,8 +38,11 @@ export function ElementsForm({
   const form = useConfigFormContext();
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="pt-6">
-        <Tabs defaultValue="server">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col overflow-auto mt-2 h-full"
+      >
+        <Tabs defaultValue="server" className="flex-1">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="server">Server</TabsTrigger>
             <TabsTrigger value="client">Client</TabsTrigger>
@@ -52,7 +55,7 @@ export function ElementsForm({
                   Variables used on the server-side
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-col gap-y-6 h-[30rem] overflow-auto">
+              <CardContent className="flex flex-col gap-y-6 h-full overflow-auto">
                 <FormField
                   control={form.control}
                   name="livemode"
@@ -280,7 +283,6 @@ export function ElementsForm({
             </Card>
           </TabsContent>
         </Tabs>
-
         <Button
           type="submit"
           className="w-full mt-4"

@@ -59,7 +59,7 @@ const DrawerDialog = ({
             Edit
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="max-h-[96%] overflow-auto">
           <ElementsForm
             onSubmit={async (configFormData: ConfigFormData) => {
               await onSubmit(configFormData);
@@ -79,7 +79,7 @@ const DrawerDialog = ({
           Edit
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="pb-4 px-4">
+      <DrawerContent className="h-[96%] pb-4 px-4">
         <ElementsForm
           onSubmit={async (configFormData: ConfigFormData) => {
             await onSubmit(configFormData);
