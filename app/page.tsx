@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Appearance,
   StripeElementsOptions,
@@ -15,8 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import CheckoutForm from "./CheckoutForm";
 import { FormProvider } from "react-hook-form";
-import { useConfigForm } from "./hooks/useConfigForm";
-import { ElementsForm, startSession } from "./ElementsForm";
+import { ConfigFormData, useConfigForm } from "./hooks/useConfigForm";
+import { ElementsForm } from "./ElementsForm";
 import { Button } from "@/components/ui/button";
 import { Link, Loader2, Pencil, RefreshCw } from "lucide-react";
 import { useAppContext } from "./hooks/useAppContext";
@@ -42,7 +42,11 @@ const stripePromiseTestmode = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_TEST_PUBLISHABLE_KEY!
   // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
 );
-const DrawerDialog = () => {
+const DrawerDialog = ({
+  onSubmit,
+}: {
+  onSubmit: (configFormData: ConfigFormData) => Promise<void>;
+}) => {
   const [isOpen, setIsOpen] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 1000px)");
 
@@ -56,7 +60,12 @@ const DrawerDialog = () => {
           </Button>
         </DialogTrigger>
         <DialogContent>
-          <ElementsForm onComplete={() => setIsOpen(false)} />
+          <ElementsForm
+            onSubmit={async (configFormData: ConfigFormData) => {
+              await onSubmit(configFormData);
+              setIsOpen(false);
+            }}
+          />
         </DialogContent>
       </Dialog>
     );
@@ -71,7 +80,12 @@ const DrawerDialog = () => {
         </Button>
       </DrawerTrigger>
       <DrawerContent className="pb-4 px-4">
-        <ElementsForm onComplete={() => setIsOpen(false)} />
+        <ElementsForm
+          onSubmit={async (configFormData: ConfigFormData) => {
+            await onSubmit(configFormData);
+            setIsOpen(false);
+          }}
+        />
       </DrawerContent>
     </Drawer>
   );
@@ -80,10 +94,52 @@ const DrawerDialog = () => {
 export default function App() {
   const methods = useConfigForm();
   const {
-    state: { configFormData, clientSecret, intentId },
+    state: { configFormData, clientSecret, intentId, elementLoaded },
     updateState,
   } = useAppContext();
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    if (configFormData) {
+      setIsRefreshing(true);
+      await onSubmit(configFormData);
+      setIsRefreshing(false);
+    }
+  };
+
+  const onSubmit = async (configFormData: ConfigFormData) => {
+    if (configFormData.intentType === "deferred_intent") {
+      updateState({
+        configFormData: configFormData,
+        intentId: null,
+        clientSecret: null,
+        elementLoaded: true,
+      });
+    } else {
+      const endpoint =
+        configFormData.intentType === "payment_intent"
+          ? "/api/create-payment-intent"
+          : "/api/create-setup-intent";
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: [{ id: "xl-tshirt", amount: 1000 }],
+          createCustomer: configFormData.createCustomer,
+          customerEmail: configFormData.customerEmail,
+          paymentMethodTypes: configFormData.paymentMethodTypes,
+          livemode: configFormData.livemode,
+        }),
+      });
+      const { id, clientSecret } = await res.json();
+      updateState({
+        configFormData: configFormData,
+        intentId: id,
+        clientSecret: clientSecret,
+        elementLoaded: true,
+      });
+    }
+  };
 
   const appearance: Appearance = {
     theme: "flat",
@@ -99,26 +155,27 @@ export default function App() {
   //   appearance,
   //   // on_behalf_of: "acct_1NRIYOBOLg168MLu",
   // };
-
-  const onRefresh = async () => {
-    if (configFormData) {
-      setIsRefreshing(true);
-      const { id, clientSecret } = await startSession(configFormData);
-      updateState({
-        configFormData: configFormData,
-        intentId: id,
-        clientSecret: clientSecret,
-      });
-      setIsRefreshing(false);
-    }
-  };
-  const options: StripeElementsOptions = clientSecret
-    ? {
-        clientSecret,
+  let options: StripeElementsOptions = {};
+  if (elementLoaded) {
+    if (configFormData?.intentType === "deferred_intent") {
+      options = {
+        mode: "payment",
+        amount: 1000,
+        currency: "usd",
         appearance,
+        paymentMethodTypes: configFormData.paymentMethodTypes,
         // on_behalf_of: "acct_1NRIYOBOLg168MLu",
+      };
+    } else {
+      if (clientSecret) {
+        options = {
+          clientSecret,
+          appearance,
+          // on_behalf_of: "acct_1NRIYOBOLg168MLu",
+        };
       }
-    : {};
+    }
+  }
 
   return (
     <FormProvider {...methods}>
@@ -151,21 +208,25 @@ export default function App() {
                   </Tooltip>
                 </TooltipProvider>
               )}
-              <DrawerDialog />
+              <DrawerDialog onSubmit={onSubmit} />
             </div>
           </div>
           <div className="flex h-full w-full flex-col gap-y-2 lg:mx-auto">
-            {clientSecret && (
+            {elementLoaded && (
               <>
                 <div className="space-y-4">
                   <div className="space-y-1 text-xs">
                     <h4 className="text-gray-500">Client Secret</h4>
-                    <p>{clientSecret}</p>
+                    {configFormData?.intentType === "deferred_intent" ? (
+                      <Badge>N/A for Deferred Intent</Badge>
+                    ) : (
+                      <Badge>{clientSecret}</Badge>
+                    )}
                   </div>
                   <div className="space-y-1 text-xs">
                     <h4 className="text-gray-500">Intent</h4>
                     {configFormData?.intentType === "deferred_intent" ? (
-                      <Badge>Deferred Intent</Badge>
+                      <Badge>N/A for Deferred Intent</Badge>
                     ) : (
                       <a
                         href={`https://go/o/${intentId}`}

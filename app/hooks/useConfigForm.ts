@@ -29,7 +29,7 @@ export function useConfigForm() {
       createCustomer: true,
       customerEmail: "michaelyangd+123@stripe.com",
       billingEmail: "michaelyangd+123@stripe.com",
-      billingName: " ",
+      billingName: "",
       performClientsideValidation: false,
       paymentMethodTypes: ["card", "us_bank_account"],
       livemode: false,

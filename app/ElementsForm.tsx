@@ -30,39 +30,12 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-export const startSession = async (configFormData: ConfigFormData) => {
-  const endpoint =
-    configFormData.intentType === "payment_intent"
-      ? "/api/create-payment-intent"
-      : "/api/create-setup-intent";
-
-  return fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      items: [{ id: "xl-tshirt", amount: 1000 }],
-      createCustomer: configFormData.createCustomer,
-      customerEmail: configFormData.customerEmail,
-      paymentMethodTypes: configFormData.paymentMethodTypes,
-      livemode: configFormData.livemode,
-    }),
-  }).then((res) => res.json());
-};
-
-export function ElementsForm({ onComplete }: { onComplete: () => void }) {
+export function ElementsForm({
+  onSubmit,
+}: {
+  onSubmit: (configFormData: ConfigFormData) => Promise<void>;
+}) {
   const form = useConfigFormContext();
-  const { updateState } = useAppContext();
-
-  async function onSubmit(values: z.infer<typeof ConfigFormDataSchema>) {
-    const { id, clientSecret } = await startSession(values);
-    updateState({
-      configFormData: form.getValues(),
-      intentId: id,
-      clientSecret: clientSecret,
-    });
-    onComplete();
-  }
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="pt-6">
@@ -123,12 +96,9 @@ export function ElementsForm({ onComplete }: { onComplete: () => void }) {
                               Setup Intent
                             </FormLabel>
                           </FormItem>
-                          <FormItem className="flex items-center space-x-3 space-y-0 opacity-20">
+                          <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem
-                                value="deferred_intent"
-                                disabled
-                              />
+                              <RadioGroupItem value="deferred_intent" />
                             </FormControl>
                             <FormLabel className="font-normal">
                               Deferred Intent
@@ -145,11 +115,22 @@ export function ElementsForm({ onComplete }: { onComplete: () => void }) {
                   name="createCustomer"
                   render={({ field }) => (
                     <FormItem className="flex flex-col gap-y-1">
-                      <FormLabel>Create Customer</FormLabel>
+                      <FormLabel
+                        className={
+                          form.getValues("intentType") === "deferred_intent"
+                            ? "opacity-20"
+                            : ""
+                        }
+                      >
+                        Create Customer on Intent
+                      </FormLabel>
                       <FormControl>
                         <Switch
                           checked={field.value}
                           onCheckedChange={field.onChange}
+                          disabled={
+                            form.getValues("intentType") === "deferred_intent"
+                          }
                         />
                       </FormControl>
                     </FormItem>
@@ -160,12 +141,25 @@ export function ElementsForm({ onComplete }: { onComplete: () => void }) {
                   name="customerEmail"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel
+                        className={
+                          form.getValues("intentType") === "deferred_intent" ||
+                          !form.getValues("createCustomer")
+                            ? "opacity-20"
+                            : ""
+                        }
+                      >
+                        Email
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="michaelyangd+123@stripe.com"
                           {...field}
-                          disabled={!form.getValues("createCustomer")}
+                          disabled={
+                            form.getValues("intentType") ===
+                              "deferred_intent" ||
+                            !form.getValues("createCustomer")
+                          }
                         />
                       </FormControl>
                       <FormMessage />

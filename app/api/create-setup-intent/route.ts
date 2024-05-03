@@ -39,13 +39,13 @@ export async function POST(request: NextRequest) {
   const setupIntent = await stripe.setupIntents.create(
     {
       ...(customer && { customer: customer.id }),
-      payment_method_options: {
-        us_bank_account: {
-          financial_connections: {
-            permissions: ["payment_method"],
-          },
-        },
-      },
+      // payment_method_options: {
+      //   us_bank_account: {
+      //     financial_connections: {
+      //       permissions: ["payment_method"],
+      //     },
+      //   },
+      // },
       payment_method_types: data.paymentMethodTypes,
       // transfer_data: {
       //   destination: "acct_1NRIYOBOLg168MLu",

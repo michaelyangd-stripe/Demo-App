@@ -5,14 +5,16 @@ import type { ConfigFormData } from "./useConfigForm";
 
 interface ContextState {
   configFormData: ConfigFormData | null;
+  elementLoaded: boolean;
   intentId: string | null;
   clientSecret: string | null;
 }
 
 interface UpdateParams {
   configFormData: ConfigFormData;
-  intentId: string;
-  clientSecret: string;
+  elementLoaded: boolean;
+  intentId: string | null;
+  clientSecret: string | null;
 }
 
 const AppContext = createContext<
@@ -32,6 +34,7 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({
 }) => {
   const [state, setState] = useState<ContextState>({
     configFormData: null,
+    elementLoaded: false,
     intentId: null,
     clientSecret: null,
   });
