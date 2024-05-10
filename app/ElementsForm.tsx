@@ -189,6 +189,9 @@ export function ElementsForm({
                             us_bank_account
                           </ToggleGroupItem>
                           <ToggleGroupItem value="link">link</ToggleGroupItem>
+                          <ToggleGroupItem value="acss_debit">
+                            acss
+                          </ToggleGroupItem>
                         </ToggleGroup>
                       </FormControl>
                     </FormItem>

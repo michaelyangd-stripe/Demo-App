@@ -27,6 +27,15 @@ export async function POST(request: NextRequest) {
       amount: 1000,
       currency: "usd",
       payment_method_types: data.paymentMethodTypes,
+      payment_method_options: {
+        acss_debit: {
+          mandate_options: {
+            payment_schedule: "interval",
+            interval_description: "First day of every month",
+            transaction_type: "personal",
+          },
+        },
+      },
       // payment_method_data: {
       //   type: "us_bank_account",
       //   billing_details: {
