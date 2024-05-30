@@ -148,13 +148,7 @@ export default function App() {
       colorBackground: "#38363F",
     },
   };
-  // const options: StripeElementsOptions = {
-  //   mode: "payment",
-  //   amount: 1000,
-  //   currency: "usd",
-  //   appearance,
-  //   // on_behalf_of: "acct_1NRIYOBOLg168MLu",
-  // };
+
   let options: StripeElementsOptions = {};
   if (elementLoaded) {
     if (configFormData?.intentType === "deferred_intent") {
