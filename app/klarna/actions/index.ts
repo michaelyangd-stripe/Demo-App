@@ -46,9 +46,16 @@ export async function createCustomer(
   return withAuth(password, isTestMode, async (stripe) => {
     try {
       return await stripe.customers.create({ name, email });
-    } catch (error) {
-      console.error("Error creating customer:", error);
-      return null;
+    } catch (e) {
+      let errorMessage = "An unknown error occurred";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      } else if (typeof e === "object" && e !== null && "message" in e) {
+        errorMessage = String((e as { message: unknown }).message);
+      } else if (typeof e === "string") {
+        errorMessage = e;
+      }
+      throw new Error(errorMessage);
     }
   });
 }
@@ -62,9 +69,16 @@ export async function fetchCustomers(
     try {
       const customers = await stripe.customers.list({ email });
       return serializeData(customers);
-    } catch (error) {
-      console.error("Error fetching customers:", error);
-      return null;
+    } catch (e) {
+      let errorMessage = "An unknown error occurred";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      } else if (typeof e === "object" && e !== null && "message" in e) {
+        errorMessage = String((e as { message: unknown }).message);
+      } else if (typeof e === "string") {
+        errorMessage = e;
+      }
+      throw new Error(errorMessage);
     }
   });
 }
@@ -78,9 +92,16 @@ export async function fetchCustomer(
     try {
       const customer = await stripe.customers.retrieve(customerId);
       return serializeData(customer);
-    } catch (error) {
-      console.error("Error fetching customer:", error);
-      return null;
+    } catch (e) {
+      let errorMessage = "An unknown error occurred";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      } else if (typeof e === "object" && e !== null && "message" in e) {
+        errorMessage = String((e as { message: unknown }).message);
+      } else if (typeof e === "string") {
+        errorMessage = e;
+      }
+      throw new Error(errorMessage);
     }
   });
 }
@@ -97,9 +118,16 @@ export async function getPaymentMethods(
         type: "us_bank_account",
       });
       return paymentMethods.data;
-    } catch (error) {
-      console.error("Error fetching payment methods:", error);
-      return [];
+    } catch (e) {
+      let errorMessage = "An unknown error occurred";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      } else if (typeof e === "object" && e !== null && "message" in e) {
+        errorMessage = String((e as { message: unknown }).message);
+      } else if (typeof e === "string") {
+        errorMessage = e;
+      }
+      throw new Error(errorMessage);
     }
   });
 }
@@ -134,9 +162,16 @@ export async function createFinancialConnectionsSession(
       });
       // console.log("session", session);
       return serializeData(session);
-    } catch (error) {
-      console.error("Error creating Financial Connections session:", error);
-      return null;
+    } catch (e) {
+      let errorMessage = "An unknown error occurred";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      } else if (typeof e === "object" && e !== null && "message" in e) {
+        errorMessage = String((e as { message: unknown }).message);
+      } else if (typeof e === "string") {
+        errorMessage = e;
+      }
+      throw new Error(errorMessage);
     }
   });
 }
@@ -152,9 +187,16 @@ export async function getFinancialConnectionsSession(
         sessionId
       );
       return serializeData(session);
-    } catch (error) {
-      console.error("Error retrieving Financial Connections session:", error);
-      return null;
+    } catch (e) {
+      let errorMessage = "An unknown error occurred";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      } else if (typeof e === "object" && e !== null && "message" in e) {
+        errorMessage = String((e as { message: unknown }).message);
+      } else if (typeof e === "string") {
+        errorMessage = e;
+      }
+      throw new Error(errorMessage);
     }
   });
 }

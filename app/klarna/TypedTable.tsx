@@ -17,19 +17,39 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import React from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  loading: boolean;
 }
 
 const TypedTable = <TData, TValue>({
   columns,
   data,
+  loading,
 }: DataTableProps<TData, TValue>) => {
+  const tableData = React.useMemo(
+    () => (loading ? Array(4).fill({}) : data),
+    [loading, data]
+  );
+
+  const tableColumns = React.useMemo(
+    () =>
+      loading
+        ? columns.map((column) => ({
+            ...column,
+            cell: () => <Skeleton className="h-[1.5rem]" />,
+          }))
+        : columns,
+    [loading]
+  );
+
   const table = useReactTable({
-    data,
-    columns,
+    data: tableData,
+    columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {

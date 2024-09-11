@@ -29,21 +29,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [customerId, setCustomerId] = useState<string | null>(null);
   const [customer, setCustomerData] = useState<CustomerData | null>(null);
-
-  useEffect(() => {
-    if (customerId) {
-      const data = getCustomerData(customerId);
-      if (data) {
-        setCustomerData(data);
-        setActiveCustomerId(customerId);
-      } else {
-        setCustomerData(null);
-        clearActiveCustomerId();
-      }
-    }
-  }, [customerId]);
 
   useEffect(() => {
     // Check local storage on initial load
@@ -58,6 +44,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       setCustomerId(activeCustomerId);
     }
   }, []);
+
+  const setCustomerId = (customerId: string | null) => {
+    if (customerId) {
+      const data = getCustomerData(customerId);
+      if (data) {
+        setCustomerData(data);
+        setActiveCustomerId(customerId);
+      } else {
+        setCustomerData(null);
+        clearActiveCustomerId();
+      }
+    } else {
+      setCustomerData(null);
+    }
+  };
 
   const authenticatePassword = async (newPassword: string) => {
     try {

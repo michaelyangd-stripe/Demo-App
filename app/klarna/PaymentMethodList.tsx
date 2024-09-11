@@ -62,6 +62,7 @@ export default function PaymentMethodList({
   const [paymentMethods, setPaymentMethods] = useState<Stripe.PaymentMethod[]>(
     []
   );
+  const [isPaymentMethodLoading, setIsPaymentMethodLoading] = useState(false);
   const [openBankDialog, setOpenBankDialog] = useState<boolean>(false);
   const [openAccountsDialog, setOpenAccountsDialog] = useState<boolean>(false);
   const { toast } = useToast();
@@ -70,6 +71,12 @@ export default function PaymentMethodList({
   const [accounts, setAccounts] = useState<
     Stripe.FinancialConnections.Account[]
   >([]);
+
+  useEffect(() => {
+    if (customer?.id) {
+      fetchPaymentMethods();
+    }
+  }, [customer?.id]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -117,12 +124,6 @@ export default function PaymentMethodList({
     fetchPaymentMethods();
   };
 
-  useEffect(() => {
-    if (customer?.id) {
-      fetchPaymentMethods();
-    }
-  }, [customer?.id]);
-
   if (isLoading) {
     return <div>Processing completed session</div>;
   }
@@ -143,8 +144,30 @@ export default function PaymentMethodList({
   }
 
   const fetchPaymentMethods = async () => {
-    const methods = await actions.getPaymentMethods();
-    setPaymentMethods(methods);
+    setIsPaymentMethodLoading(true);
+    try {
+      const methods = await actions.getPaymentMethods();
+      setPaymentMethods(methods);
+      setIsPaymentMethodLoading(false);
+    } catch (e) {
+      let errorMessage = "An unknown error occurred";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      } else if (typeof e === "object" && e !== null && "message" in e) {
+        errorMessage = String((e as { message: unknown }).message);
+      } else if (typeof e === "string") {
+        errorMessage = e;
+      }
+
+      toast({
+        variant: "destructive",
+        title: "Error Creating New Session",
+        description: `Message: ${errorMessage}`,
+        duration: 3000,
+      });
+      setIsPaymentMethodLoading(false);
+      return;
+    }
   };
 
   const paymentMethodsData: PaymentMethod[] =
@@ -172,7 +195,11 @@ export default function PaymentMethodList({
           Add Payment Method
         </Button>
       </div>
-      <TypedTable columns={columns} data={paymentMethodsData} />
+      <TypedTable
+        columns={columns}
+        data={paymentMethodsData}
+        loading={isPaymentMethodLoading}
+      />
       <BankDialog
         isOpen={openBankDialog}
         onClose={() => setOpenBankDialog(false)}

@@ -175,7 +175,11 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
         </div>
       </Card>
       <div className="w-full">
-        <TypedTable columns={columns} data={customers} />
+        <TypedTable
+          columns={columns}
+          data={customers}
+          loading={emailSearchLoading}
+        />
       </div>
     </div>
   );

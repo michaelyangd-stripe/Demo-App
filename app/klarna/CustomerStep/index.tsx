@@ -171,7 +171,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
           <TabsTrigger value="create">Create</TabsTrigger>
         </TabsList>
         <TabsContent value="saved">
-          <TypedTable columns={columns} data={savedCustomers} />
+          <TypedTable columns={columns} data={savedCustomers} loading={false} />
         </TabsContent>
         <TabsContent value="searchId">
           <IDSearchForm onNext={onNext} />
