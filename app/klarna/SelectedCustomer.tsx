@@ -20,18 +20,16 @@ function SelectedCustomer() {
   }
 
   return (
-    <h2 className="text-md font-semibold">
-      <a
-        href={`https://go/o/${customer?.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Badge>
-          <LinkIcon className="w-3 h-3 mr-1" />
-          {customer?.id}
-        </Badge>
-      </a>
-    </h2>
+    <a
+      href={`https://go/o/${customer?.id}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <Badge>
+        <LinkIcon className="w-3 h-3 mr-1" />
+        {customer?.id}
+      </Badge>
+    </a>
   );
 }
 

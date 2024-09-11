@@ -73,7 +73,7 @@ export default function Flow() {
     <div className="w-full max-w-3xl px-4 2xl:px-0 flex flex-col mx-auto">
       <Confetti
         ref={confettiRef}
-        className="absolute left-0 top-0 z-0 size-full"
+        className="absolute left-0 top-0 z-0 size-full pointer-events-none"
         manualstart
       />
       <div className="flex justify-around rounded py-4 mb-4 w-full select-none">
