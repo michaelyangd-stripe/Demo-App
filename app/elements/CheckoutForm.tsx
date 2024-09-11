@@ -7,10 +7,12 @@ import {
 
 import { StripePaymentElementOptions } from "@stripe/stripe-js";
 import { useAppContext } from "./hooks/useAppContext";
+import { getBaseUrl } from "@/lib/utils";
 
 export default function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
+  const baseUrl = getBaseUrl();
   const {
     state: { configFormData },
   } = useAppContext();
@@ -80,7 +82,7 @@ export default function CheckoutForm() {
         ? await stripe.confirmSetup({
             elements,
             confirmParams: {
-              return_url: "http://localhost:7777/success",
+              return_url: `${baseUrl}/elements/success`,
             },
           })
         : await stripe.confirmPayment({
@@ -89,7 +91,7 @@ export default function CheckoutForm() {
               clientSecret,
             }),
             confirmParams: {
-              return_url: "http://localhost:7777/success",
+              return_url: `${baseUrl}/elements/success`,
             },
           });
 
