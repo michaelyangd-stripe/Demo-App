@@ -15,7 +15,7 @@ type Customer = {
 
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "../contexts/AppContext";
-import { saveCustomerData } from "@/lib/stateId";
+import { saveCustomerData } from "@/app/klarna/localstorage";
 import { Card } from "@/components/ui/card";
 import TypedTable from "../TypedTable";
 import { Switch } from "@/components/ui/switch";
@@ -27,7 +27,7 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
   const [testmode, setTestmode] = useState(false);
   const { toast } = useToast();
   const actions = useActions();
-  const { setCustomerId } = useApp();
+  const { customer, setCustomerId } = useApp();
 
   const onEmailSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -112,7 +112,7 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
     },
     {
       accessorKey: "testmode",
-      header: "Environment",
+      header: "Env",
       cell: ({ row }) => {
         if (typeof row.original.testmode == "boolean") {
           return row.original.testmode ? <TestmodeBadge /> : <LivemodeBadge />;
@@ -124,6 +124,7 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
       cell: ({ row }) => {
         return (
           <Button
+            disabled={row.original.id === customer?.id}
             onClick={() => {
               saveCustomerData({
                 id: row.original.id,
@@ -136,7 +137,7 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
               onNext();
             }}
           >
-            Select
+            {row.original.id === customer?.id ? "Selected" : "Select"}
           </Button>
         );
       },

@@ -7,7 +7,7 @@ import { useActions } from "../hooks/useActions";
 
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "../contexts/AppContext";
-import { saveCustomerData } from "@/lib/stateId";
+import { saveCustomerData } from "@/app/klarna/localstorage";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { LivemodeBadge, TestmodeBadge } from "../EnvironmentBadge";

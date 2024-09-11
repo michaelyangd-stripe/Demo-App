@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Stripe from "stripe";
 import { useToast } from "@/hooks/use-toast";
-import { getStateDataByStateId } from "@/lib/stateId";
+import { getStateDataByStateId } from "@/app/klarna/localstorage";
 import { useActions } from "./hooks/useActions";
 import { useApp } from "./contexts/AppContext";
 import { BankDialog } from "./BankDialog";

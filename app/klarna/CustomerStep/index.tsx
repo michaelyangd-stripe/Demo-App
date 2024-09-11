@@ -4,7 +4,7 @@ import { FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { useActions } from "../hooks/useActions";
 import { ColumnDef } from "@tanstack/react-table";
-import { getAllCustomers } from "@/lib/stateId";
+import { getAllCustomers } from "@/app/klarna/localstorage";
 
 type Customer = {
   id: string;
@@ -15,7 +15,7 @@ type Customer = {
 
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "../contexts/AppContext";
-import { saveCustomerData } from "@/lib/stateId";
+import { saveCustomerData } from "@/app/klarna/localstorage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TypedTable from "../TypedTable";
 import { LivemodeBadge, TestmodeBadge } from "../EnvironmentBadge";
@@ -26,7 +26,7 @@ import NewCustomerForm from "./NewCustomerForm";
 export default function CustomerLookup({ onNext }: { onNext: () => void }) {
   const { toast } = useToast();
   const actions = useActions();
-  const { setCustomerId } = useApp();
+  const { customer, setCustomerId } = useApp();
   const savedCustomersInObjects = getAllCustomers();
   let savedCustomers: Customer[] =
     savedCustomersInObjects &&
@@ -52,7 +52,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
     },
     {
       accessorKey: "testmode",
-      header: "Environment",
+      header: "Env",
       cell: ({ row }) => {
         if (typeof row.original.testmode == "boolean") {
           return row.original.testmode ? <TestmodeBadge /> : <LivemodeBadge />;
@@ -61,9 +61,11 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
     },
     {
       id: "actions",
+
       cell: ({ row }) => {
         return (
           <Button
+            disabled={row.original.id === customer?.id}
             onClick={() => {
               saveCustomerData({
                 id: row.original.id,
@@ -76,7 +78,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
               onNext();
             }}
           >
-            Select
+            {row.original.id === customer?.id ? "Selected" : "Select"}
           </Button>
         );
       },

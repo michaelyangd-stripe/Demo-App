@@ -1,9 +1,24 @@
-import { MainNav } from "./MainNav";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function MainPage() {
   return (
-    <div className="flex h-16 items-center px-4 max-w-3xl mx-auto">
-      <MainNav />
+    <div className="flex flex-col w-full h-full justify-center items-center space-y-6">
+      <h1 className="text-4xl font-bold">Hi.</h1>
+      <Link
+        href="/klarna"
+        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        passHref
+      >
+        <Button>Klarna</Button>
+      </Link>
+      <Link
+        href="/elements"
+        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        passHref
+      >
+        <Button>Elements</Button>
+      </Link>
     </div>
   );
 }

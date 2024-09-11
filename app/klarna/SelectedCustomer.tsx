@@ -6,14 +6,19 @@ import { Badge } from "@/components/ui/badge";
 import { LinkIcon } from "lucide-react";
 
 function SelectedCustomer() {
-  const { customer } = useApp();
+  const { isAuthenticated, customer } = useApp();
+  if (!isAuthenticated) {
+    return null;
+  }
+
   if (!customer) {
     return (
-      <Badge className="bg-muted-foreground text-muted">
+      <Badge className="bg-muted-foreground text-muted cursor-default">
         No Customer Selected
       </Badge>
     );
   }
+
   return (
     <h2 className="text-md font-semibold">
       <a

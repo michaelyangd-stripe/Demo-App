@@ -21,7 +21,7 @@ import {
   generateStateId,
   getStateStatus,
   updateStateData,
-} from "@/lib/stateId";
+} from "@/app/klarna/localstorage";
 import { useActions } from "./hooks/useActions";
 import { LoaderIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -269,7 +269,7 @@ export function BankDialog({
                         setConsentChecked(!!checked)
                       }
                     />
-                    <label htmlFor="terms" className="text-xs">
+                    <label htmlFor="terms" className="text-xs cursor-pointer">
                       {`I agree to the above and authorize Klarna to view and take
                       payments from my bank account per my existing payment
                       authorizations. I've also reviewed Klarna's Privacy

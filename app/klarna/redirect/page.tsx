@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { getStateDataByStateId, updateStateData } from "@/lib/stateId";
+import {
+  getStateDataByStateId,
+  updateStateData,
+} from "@/app/klarna/localstorage";
 
 export default function RedirectPage() {
   const searchParams = useSearchParams();

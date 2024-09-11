@@ -81,7 +81,74 @@ export const testInstitutions: Institution[] = [
 ];
 
 export const liveInstitutions: Institution[] = [
-  // { id: "fcinst_live1", name: "Live Bank 1", imageUrl: "/live-bank-1.png" },
-  // { id: "fcinst_live2", name: "Live Bank 2", imageUrl: "/live-bank-2.png" },
-  // Add more live institutions as needed
+  {
+    id: "fcinst_QH6iLV0fYVuYEw",
+    bcId: "bcinst_JFqfjYGYSxdQ8O",
+    imageUrl:
+      "https://b.stripecdn.com/connections-statics-srv/assets/BrandIcon--morganchase-4x.png",
+    name: "Chase",
+  },
+  {
+    id: "fcinst_QH6ixg2YuSCpjy",
+    bcId: "bcinst_JFqf3Z5vUVyLs1",
+    imageUrl:
+      "https://b.stripecdn.com/connections-statics-srv/assets/BrandIcon--boa-4x.png",
+    name: "Bank of America",
+  },
+  {
+    id: "fcinst_QH6iJOuz7DYwD9",
+    bcId: "bcinst_JFqf2wHURe59q2",
+    imageUrl:
+      "https://b.stripecdn.com/connections-statics-srv/assets/BrandIcon--td-4x.png",
+    name: "TD Bank",
+  },
+  {
+    id: "fcinst_QH6kn9m1ZyAejn",
+    bcId: "bcinst_JFqgsmKE6POyrv",
+    imageUrl:
+      "https://b.stripecdn.com/connections-statics-srv/assets/BrandIcon--capitalone-4x.png",
+    name: "Capital One",
+  },
+  {
+    id: "fcinst_QH6jGYt8OLa3r8",
+    bcId: "bcinst_JFqgm69DJPH2aP",
+    imageUrl:
+      "https://b.stripecdn.com/connections-statics-srv/assets/BrandIcon--citibank-4x.png",
+    name: "Citibank",
+  },
+  {
+    id: "fcinst_QH6iVJ0wBsjsPA",
+    bcId: "bcinst_JFqfBood9FTw67",
+    imageUrl:
+      "https://b.stripecdn.com/connections-statics-srv/assets/BrandIcon--wellsfargo-4x.png",
+    name: "Wells Fargo",
+  },
+  {
+    id: "fcinst_QH6jY8QK1BuDBd",
+    bcId: "bcinst_JFqg9N6RSs29sT",
+    imageUrl:
+      "https://b.stripecdn.com/connections-statics-srv/assets/BrandIcon--m&t-4x.png",
+    name: "M&T Bank",
+  },
+  {
+    id: "fcinst_QH6ig8VZ5tHptx",
+    bcId: "bcinst_JFqfRR37WrSV6E",
+    imageUrl:
+      "https://b.stripecdn.com/connections-statics-srv/assets/BrandIcon--citizens-4x.png",
+    name: "Citizens Bank",
+  },
+  {
+    id: "fcinst_QH6kJXZQhcRU6e",
+    bcId: "bcinst_JFqh179iDiQuS9",
+    imageUrl:
+      "https://b.stripecdn.com/connections-statics-srv/assets/BrandIcon--chime-4x.png",
+    name: "Chime",
+  },
+  {
+    id: "fcinst_QH6i6oqXu6mxwZ",
+    bcId: "bcinst_JFqfK0eaW3cd2P",
+    imageUrl:
+      "https://b.stripecdn.com/connections-statics-srv/assets/BrandIcon--keybank-4x.png",
+    name: "Key Bank",
+  },
 ];

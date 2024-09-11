@@ -16,7 +16,29 @@ export interface CustomerData {
   };
 }
 
-const CUSTOMERS_KEY = "financialConnectionsCustomers";
+const CUSTOMERS_KEY = "michaelyangd_klarna_Customers";
+const ACTIVE_CUSTOMER_KEY = "michaelyangd_klarna_activeCustomerId";
+const PASSWORD_KEY = "michaelyangd_klarna_Password";
+
+export function setPassword(password: string): void {
+  localStorage.setItem(PASSWORD_KEY, password);
+}
+
+export function getPassword(): string | null {
+  return localStorage.getItem(PASSWORD_KEY);
+}
+
+export function setActiveCustomerId(customerId: string): void {
+  localStorage.setItem(ACTIVE_CUSTOMER_KEY, customerId);
+}
+
+export function getActiveCustomerId(): string | null {
+  return localStorage.getItem(ACTIVE_CUSTOMER_KEY);
+}
+
+export function clearActiveCustomerId(): void {
+  localStorage.removeItem(ACTIVE_CUSTOMER_KEY);
+}
 
 export function saveCustomerData(customerData: CustomerData): void {
   const customers = getAllCustomers();

@@ -3,8 +3,16 @@
 
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { verifyPassword } from "../actions";
-import { getCustomerData } from "@/lib/stateId";
-import { CustomerData } from "@/lib/stateId";
+import {
+  clearActiveCustomerId,
+  getActiveCustomerId,
+  getCustomerData,
+  getPassword,
+  setActiveCustomerId,
+  setPassword as setPasswordStorage,
+} from "@/app/klarna/localstorage";
+import { CustomerData } from "@/app/klarna/localstorage";
+import { toast } from "@/hooks/use-toast";
 
 type AppContextType = {
   password: string;
@@ -29,19 +37,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       const data = getCustomerData(customerId);
       if (data) {
         setCustomerData(data);
+        setActiveCustomerId(customerId);
+      } else {
+        setCustomerData(null);
+        clearActiveCustomerId();
       }
-    } else {
-      setCustomerData(null);
     }
   }, [customerId]);
 
   useEffect(() => {
-    // Check session storage on initial load
-    const storedPassword = sessionStorage.getItem("password");
+    // Check local storage on initial load
+    const storedPassword = getPassword();
+    const activeCustomerId = getActiveCustomerId();
     if (storedPassword) {
       authenticatePassword(storedPassword);
     } else {
       setIsAuthenticated(false);
+    }
+    if (activeCustomerId) {
+      setCustomerId(activeCustomerId);
     }
   }, []);
 
@@ -49,11 +63,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await verifyPassword(newPassword);
       setPassword(newPassword);
-      sessionStorage.setItem("password", newPassword);
+      setPasswordStorage(newPassword);
       setIsAuthenticated(true);
-    } catch (error) {
-      console.error("Authentication failed:", error);
-      setIsAuthenticated(false);
+    } catch (e) {
+      let errorMessage = "An unknown error occurred";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      } else if (typeof e === "object" && e !== null && "message" in e) {
+        errorMessage = String((e as { message: unknown }).message);
+      } else if (typeof e === "string") {
+        errorMessage = e;
+      }
+
+      toast({
+        variant: "destructive",
+        title: "Error Authenticating Password",
+        description: `Message: ${errorMessage}`,
+        duration: 3000,
+      });
+      return;
     }
   };
 
