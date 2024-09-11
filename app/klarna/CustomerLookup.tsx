@@ -12,10 +12,13 @@ import {
   getPaginationRowModel,
 } from "@tanstack/react-table";
 import { Separator } from "@/components/ui/separator";
+import { getAllCustomers } from "@/lib/stateId";
 
 type Customer = {
   id: string;
   email: string;
+  name: string;
+  testmode: boolean;
 };
 
 import {
@@ -27,6 +30,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import { useApp } from "./contexts/AppContext";
+import { saveCustomerData } from "@/lib/stateId";
+import { Badge } from "@/components/ui/badge";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -117,21 +123,24 @@ const CustomerTable = <TData, TValue>({
   );
 };
 
-export default function CustomerLookup({
-  setCustomerId,
-  onNext,
-}: {
-  setCustomerId: (id: string) => void;
-  onNext: () => void;
-}) {
+export default function CustomerLookup({ onNext }: { onNext: () => void }) {
   const [email, setEmail] = useState("");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const { toast } = useToast();
   const actions = useActions();
+  const { setCustomerId } = useApp();
+  const savedCustomersInObjects = getAllCustomers();
+  let savedCustomers: Customer[] =
+    savedCustomersInObjects &&
+    Object.entries(savedCustomersInObjects).map(([id, data]) => ({
+      id,
+      email: data.email,
+      name: data.name,
+      testmode: data.testmode,
+    }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const fetchCustomers = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!email) {
       toast({
         variant: "destructive",
@@ -157,6 +166,8 @@ export default function CustomerLookup({
         response.data.map((customer) => ({
           id: customer.id,
           email: customer.email || "",
+          name: customer.name || "",
+          testmode: !customer.livemode,
         }))
       );
     }
@@ -168,8 +179,23 @@ export default function CustomerLookup({
       header: "ID",
     },
     {
+      accessorKey: "name",
+      header: "Name",
+    },
+    {
       accessorKey: "email",
       header: "Email",
+    },
+    {
+      accessorKey: "testmode",
+      header: "testmode",
+      cell: ({ row }) => {
+        if (typeof row.original.testmode == "boolean") {
+          return (
+            <Badge>{row.original.testmode ? "testmode" : "livemode"}</Badge>
+          );
+        }
+      },
     },
     {
       id: "actions",
@@ -177,6 +203,13 @@ export default function CustomerLookup({
         return (
           <Button
             onClick={() => {
+              saveCustomerData({
+                id: row.original.id,
+                email: row.original.email,
+                name: row.original.name,
+                testmode: row.original.testmode,
+                stateIds: {},
+              });
               setCustomerId(row.original.id);
               onNext();
             }}
@@ -188,7 +221,7 @@ export default function CustomerLookup({
     },
   ];
 
-  const handleManualSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleManualSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const customerId = form.elements.namedItem(
@@ -203,8 +236,48 @@ export default function CustomerLookup({
       });
       return;
     }
-    setCustomerId(customerId.value);
-    onNext();
+
+    try {
+      const customer = await actions.fetchCustomer(customerId.value);
+      if (!customer) {
+        toast({
+          variant: "destructive",
+          title: "Customer Not Found",
+          description: "No customer found with the provided ID.",
+          duration: 3000,
+        });
+        return;
+      }
+
+      if (customer.deleted) {
+        toast({
+          variant: "destructive",
+          title: "Customer Has Been Deleted",
+          description: "Customer was found but have been deleted.",
+          duration: 3000,
+        });
+        return;
+      }
+
+      saveCustomerData({
+        id: customer.id,
+        email: customer.email || "",
+        name: customer.name || "",
+        testmode: !customer.livemode,
+        stateIds: {},
+      });
+      setCustomerId(customer.id);
+      onNext();
+    } catch (error) {
+      console.error("Error fetching customer:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          "An error occurred while fetching the customer. Please try again.",
+        duration: 3000,
+      });
+    }
   };
 
   const createCustomer = async (e: FormEvent<HTMLFormElement>) => {
@@ -232,8 +305,15 @@ export default function CustomerLookup({
         customerEmail.value
       );
       if (!customer) {
-        throw Error("No customer returned.");
+        throw new Error("No customer returned from createCustomer.");
       }
+      saveCustomerData({
+        id: customer.id,
+        email: customer.email || "",
+        name: customer.name || "",
+        testmode: !customer.livemode,
+        stateIds: {},
+      });
       setCustomerId(customer.id);
       onNext();
     } catch (e) {
@@ -258,7 +338,16 @@ export default function CustomerLookup({
 
   return (
     <div>
-      <h1 className="text-xl font-semibold mb-4">Provide Customer Id</h1>
+      <h1 className="text-xl font-semibold">Select a Stripe Customer</h1>
+      <p className="text-md mb-2 text-slate-400">
+        Mimicking Klarna's sign-in flow where a user would have an associated
+        Stripe Customer Id
+      </p>
+      <div className="space-y-2">
+        <h2 className="text-md">Saved Customers</h2>
+        <CustomerTable columns={columns} data={savedCustomers} />
+      </div>
+      <Separator className="my-10" />
       <div className="space-y-2">
         <h2 className="text-md">Create a Customer</h2>
         <form className="mb-4 flex flex-row gap-x-6" onSubmit={createCustomer}>
@@ -281,7 +370,7 @@ export default function CustomerLookup({
       <Separator className="my-10" />
       <div className="space-y-2">
         <h2 className="text-md">Search Customers by Email</h2>
-        <form onSubmit={handleSubmit} className="mb-4 flex flex-row gap-x-6">
+        <form onSubmit={fetchCustomers} className="mb-4 flex flex-row gap-x-6">
           <Input
             type="email"
             value={email}

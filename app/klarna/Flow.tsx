@@ -7,11 +7,12 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import CustomerLookup from "./CustomerLookup";
 import PaymentMethodList from "./PaymentMethodList";
+import { useApp } from "./contexts/AppContext";
 
 export default function Flow() {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [direction, setDirection] = useState(0);
-  const [customerId, setCustomerId] = useState("");
+  const { customer } = useApp();
 
   const pageVariants = {
     initial: (direction: number) => {
@@ -51,12 +52,8 @@ export default function Flow() {
   };
 
   const steps = [
-    <CustomerLookup
-      key="0"
-      setCustomerId={(id: string) => setCustomerId(id)}
-      onNext={nextStep}
-    />,
-    <PaymentMethodList key="1" customerId={customerId} onNext={nextStep} />,
+    <CustomerLookup key="0" onNext={nextStep} />,
+    <PaymentMethodList key="1" onNext={nextStep} />,
   ];
 
   return (
@@ -72,17 +69,17 @@ export default function Flow() {
           <span className="sr-only">Back</span>
           <ArrowLeftIcon className="w-6 h-6 text-otsa_black hover:text-gray-600 transition-all" />
         </button>
-        {customerId && (
+        {customer?.id && (
           <h2 className="text-md font-semibold">
             Selected Customer:{" "}
             <a
-              href={`https://go/o/${customerId}`}
+              href={`https://go/o/${customer?.id}`}
               target="_blank"
               rel="noopener noreferrer"
             >
               <Badge>
                 <Link className="w-3 h-3 mr-1" />
-                {customerId}
+                {customer?.id}
               </Badge>
             </a>
           </h2>

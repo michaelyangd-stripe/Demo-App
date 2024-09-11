@@ -1,28 +1,34 @@
-// app/redirect/page.tsx
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { getFinancialConnectionsSession } from "../actions";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { getStateDataByStateId, updateStateData } from "@/lib/stateId";
 
 export default function RedirectPage() {
-  const router = useRouter();
-
+  const searchParams = useSearchParams();
+  const [textToShow, setTextToShow] = useState<string>(
+    "Processing, please wait..."
+  );
   useEffect(() => {
-    const handleRedirect = async () => {
-      const customerId = localStorage.getItem("customerId");
-      const lasId = localStorage.getItem("lasId");
-      if (customerId && lasId) {
-        // const session = await getFinancialConnectionsSession(lasId);
-        // if (session.status === "succeeded") {
-        //   // Process the linked accounts
-        //   router.push("/");
-        // }
+    try {
+      const stateId = searchParams.get("stateId");
+      if (!stateId) {
+        setTextToShow("State Id Not Found");
+        return;
       }
-    };
+      const stateData = getStateDataByStateId(stateId);
+      if (!stateData?.customerId) {
+        setTextToShow("Customer Id Not Found");
+        return;
+      }
+      updateStateData(stateData?.customerId, stateId, {
+        status: "completed",
+      });
+      window.close();
+    } catch (e) {
+      setTextToShow("Update State Failed");
+    }
+  }, [searchParams]);
 
-    handleRedirect();
-  }, [router]);
-
-  return <div>Processing...</div>;
+  return <div>{textToShow}</div>;
 }

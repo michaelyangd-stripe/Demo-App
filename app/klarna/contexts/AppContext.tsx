@@ -3,6 +3,8 @@
 
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { verifyPassword } from "../actions";
+import { getCustomerData } from "@/lib/stateId";
+import { CustomerData } from "@/lib/stateId";
 
 type AppContextType = {
   password: string;
@@ -10,6 +12,8 @@ type AppContextType = {
   isAuthenticated: boolean | null;
   isTestMode: boolean;
   toggleTestMode: () => void;
+  customer: CustomerData | null;
+  setCustomerId: (customerId: string | null) => void;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -20,6 +24,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isTestMode, setIsTestMode] = useState(true);
+  const [customerId, setCustomerId] = useState<string | null>(null);
+  const [customer, setCustomerData] = useState<CustomerData | null>(null);
+
+  useEffect(() => {
+    if (customerId) {
+      const data = getCustomerData(customerId);
+      if (data) {
+        setCustomerData(data);
+      }
+    } else {
+      setCustomerData(null);
+    }
+  }, [customerId]);
 
   useEffect(() => {
     // Check session storage on initial load
@@ -63,6 +80,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         isAuthenticated,
         isTestMode,
         toggleTestMode,
+        customer,
+        setCustomerId,
       }}
     >
       {children}

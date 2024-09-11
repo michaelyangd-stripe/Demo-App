@@ -2,6 +2,10 @@
 
 import Stripe from "stripe";
 
+function serializeData<T>(data: T): T {
+  return JSON.parse(JSON.stringify(data));
+}
+
 const getStripeInstance = (isTestMode: boolean) => {
   const apiKey = isTestMode
     ? process.env.STRIPE_TEST_SECRET_KEY!
@@ -55,9 +59,10 @@ export async function fetchCustomers(
 ) {
   return withAuth(password, isTestMode, async (stripe) => {
     try {
-      return await stripe.customers.list({ email });
+      const customers = await stripe.customers.list({ email });
+      return serializeData(customers);
     } catch (error) {
-      console.error("Error fetching customer:", error);
+      console.error("Error fetching customers:", error);
       return null;
     }
   });
@@ -70,7 +75,8 @@ export async function fetchCustomer(
 ) {
   return withAuth(password, isTestMode, async (stripe) => {
     try {
-      return await stripe.customers.retrieve(customerId);
+      const customer = await stripe.customers.retrieve(customerId);
+      return serializeData(customer);
     } catch (error) {
       console.error("Error fetching customer:", error);
       return null;
@@ -100,14 +106,13 @@ export async function getPaymentMethods(
 export async function createFinancialConnectionsSession(
   customerId: string,
   institutionId: string,
+  stateId: string,
   password: string,
   isTestMode: boolean
 ) {
-  console.log("customerId", customerId);
-  console.log("institutionId", institutionId);
   return withAuth(password, isTestMode, async (stripe) => {
     try {
-      return await stripe.financialConnections.sessions.create({
+      const session = await stripe.financialConnections.sessions.create({
         account_holder: {
           type: "customer",
           customer: customerId,
@@ -122,9 +127,11 @@ export async function createFinancialConnectionsSession(
         // @ts-ignore
         filters: { countries: ["US"], institution: institutionId },
         hosted: {
-          return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/klarna/success`,
+          return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/klarna/redirect?stateId=${stateId}`,
         },
       });
+      // console.log("session", session);
+      return serializeData(session);
     } catch (error) {
       console.error("Error creating Financial Connections session:", error);
       return null;
@@ -139,10 +146,50 @@ export async function getFinancialConnectionsSession(
 ) {
   return withAuth(password, isTestMode, async (stripe) => {
     try {
-      return await stripe.financialConnections.sessions.retrieve(sessionId);
+      const session = await stripe.financialConnections.sessions.retrieve(
+        sessionId
+      );
+      return serializeData(session);
     } catch (error) {
       console.error("Error retrieving Financial Connections session:", error);
       return null;
+    }
+  });
+}
+
+export async function createPaymentMethodsFromAccounts(
+  accountIds: string[],
+  customerName: string,
+  customerId: string,
+  password: string,
+  isTestMode: boolean
+) {
+  return withAuth(password, isTestMode, async (stripe) => {
+    try {
+      const paymentMethods = await Promise.all(
+        accountIds.map(async (accountId) => {
+          const paymentMethod = await stripe.paymentMethods.create({
+            type: "us_bank_account",
+            billing_details: {
+              name: customerName,
+            },
+            us_bank_account: {
+              financial_connections_account: accountId,
+            },
+          });
+
+          await stripe.paymentMethods.attach(paymentMethod.id, {
+            customer: customerId,
+          });
+
+          return paymentMethod;
+        })
+      );
+
+      return serializeData(paymentMethods);
+    } catch (error) {
+      console.error("Error creating payment methods:", error);
+      throw error;
     }
   });
 }
