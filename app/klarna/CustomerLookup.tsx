@@ -33,6 +33,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useApp } from "./contexts/AppContext";
 import { saveCustomerData } from "@/lib/stateId";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -192,7 +194,15 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
       cell: ({ row }) => {
         if (typeof row.original.testmode == "boolean") {
           return (
-            <Badge>{row.original.testmode ? "testmode" : "livemode"}</Badge>
+            <Badge
+              className={
+                row.original.testmode
+                  ? "bg-[#ff8f0e] text-white"
+                  : "bg-[#4299e1] text-white"
+              }
+            >
+              {row.original.testmode ? "test" : "livemode"}
+            </Badge>
           );
         }
       },
@@ -337,51 +347,87 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
   };
 
   return (
-    <div>
-      <h1 className="text-xl font-semibold">Select a Stripe Customer</h1>
-      <p className="text-md mb-2 text-slate-400">
-        Mimicking Klarna's sign-in flow where a user would have an associated
-        Stripe Customer Id
-      </p>
-      <div className="space-y-2">
-        <h2 className="text-md">Saved Customers</h2>
-        <CustomerTable columns={columns} data={savedCustomers} />
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-4xl font-extrabold tracking-tight">
+          Select a Stripe Customer
+        </h1>
+        <p className="text-xl text-muted-foreground">
+          Mimicking Klarna's sign-in flow
+        </p>
       </div>
-      <Separator className="my-10" />
-      <div className="space-y-2">
-        <h2 className="text-md">Create a Customer</h2>
-        <form className="mb-4 flex flex-row gap-x-6" onSubmit={createCustomer}>
-          <Input type="text" name="customerName" placeholder="Name" />
-          <Input type="email" name="customerEmail" placeholder="Email" />
-          <Button type="submit">Submit</Button>
-        </form>
-      </div>
-      <Separator className="my-10" />
-      <div className="space-y-2">
-        <h2 className="text-md">Manual</h2>
-        <form
-          className="mb-4 flex flex-row gap-x-6"
-          onSubmit={handleManualSubmit}
-        >
-          <Input type="text" name="customerId" placeholder="cus_" />
-          <Button type="submit">Submit</Button>
-        </form>
-      </div>
-      <Separator className="my-10" />
-      <div className="space-y-2">
-        <h2 className="text-md">Search Customers by Email</h2>
-        <form onSubmit={fetchCustomers} className="mb-4 flex flex-row gap-x-6">
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter email"
-            className="mb-2"
-          />
-          <Button type="submit">Fetch Customers</Button>
-        </form>
-        <CustomerTable columns={columns} data={customers} />
-      </div>
+      <Tabs defaultValue="saved" className="space-y-2">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="saved">Saved</TabsTrigger>
+          <TabsTrigger value="searchId">ID Search</TabsTrigger>
+          <TabsTrigger value="searchEmail">Email Search</TabsTrigger>
+          <TabsTrigger value="create">Create</TabsTrigger>
+        </TabsList>
+        <TabsContent value="saved">
+          <CustomerTable columns={columns} data={savedCustomers} />
+        </TabsContent>
+        <TabsContent value="searchId">
+          <Card>
+            <div className="space-y-2 flex flex-col justify-center items-center min-h-[300px] my-4">
+              <h2 className="text-xl font-extrabold tracking-tight">
+                Serach by Customer ID
+              </h2>
+              <form
+                className="mb-4 flex flex-col gap-x-6 space-y-2 w-full max-w-[300px]"
+                onSubmit={handleManualSubmit}
+              >
+                <Input type="text" name="customerId" placeholder="cus_" />
+                <Button type="submit">Submit</Button>
+              </form>
+            </div>
+          </Card>
+        </TabsContent>
+        <TabsContent value="searchEmail">
+          <div className="space-y-2">
+            <Card>
+              <div className="space-y-2 flex flex-col justify-center items-center min-h-[146px] my-4">
+                <h2 className="text-xl font-extrabold tracking-tight">
+                  Serach by Email
+                </h2>
+                <form
+                  onSubmit={fetchCustomers}
+                  className="flex flex-row gap-x-4 w-full max-w-[300px]"
+                >
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="email"
+                    className="mb-2"
+                  />
+                  <Button type="submit">Search</Button>
+                </form>
+              </div>
+            </Card>
+
+            <div className="w-full">
+              <CustomerTable columns={columns} data={customers} />
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="create">
+          <Card>
+            <div className="space-y-2 flex flex-col justify-center items-center min-h-[300px] my-4">
+              <h2 className="text-xl font-extrabold tracking-tight">
+                Create a New Customer
+              </h2>
+              <form
+                className="mb-4 flex flex-col gap-x-6 space-y-2 w-full max-w-[300px]"
+                onSubmit={createCustomer}
+              >
+                <Input type="text" name="customerName" placeholder="Name" />
+                <Input type="email" name="customerEmail" placeholder="Email" />
+                <Button type="submit">Submit</Button>
+              </form>
+            </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
