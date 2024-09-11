@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { PasswordProvider } from "./contexts/PasswordContext";
+import { AppProvider } from "./contexts/AppContext";
+import { ModeToggle } from "./ModeToggle";
+import Image from "next/image";
+Image;
 
 export const metadata: Metadata = {
   title: "Demo - Elements",
@@ -11,5 +14,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <PasswordProvider>{children}</PasswordProvider>;
+  return (
+    <AppProvider>
+      <div className="flex flex-row justify-between items-center px-4 2xl:px-0 my-4">
+        <div className="flex flex-row justify-center items-center gap-x-2">
+          <Image
+            src="./klarna_logo.svg"
+            width={50}
+            height={50}
+            alt="Klarna Logo"
+          />
+        </div>
+        <ModeToggle />
+      </div>
+      {children}
+    </AppProvider>
+  );
 }

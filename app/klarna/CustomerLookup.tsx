@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { fetchCustomers } from "./actions";
+import { useActions } from "./hooks/useActions";
 import {
   ColumnDef,
   flexRender,
@@ -26,7 +26,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { usePassword } from "./contexts/PasswordContext";
 import { useToast } from "@/hooks/use-toast";
 
 interface DataTableProps<TData, TValue> {
@@ -125,10 +124,10 @@ export default function CustomerLookup({
   setCustomerId: (id: string) => void;
   onNext: () => void;
 }) {
-  const { password } = usePassword();
   const [email, setEmail] = useState("");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const { toast } = useToast();
+  const actions = useActions();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,7 +142,7 @@ export default function CustomerLookup({
       return;
     }
 
-    const response = await fetchCustomers(email, password);
+    const response = await actions.fetchCustomers(email);
     if (response && response.data) {
       if (response.data.length === 0) {
         toast({
@@ -208,9 +207,67 @@ export default function CustomerLookup({
     onNext();
   };
 
+  const createCustomer = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const customerEmail = form.elements.namedItem(
+      "customerEmail"
+    ) as HTMLInputElement;
+    const customerName = form.elements.namedItem(
+      "customerName"
+    ) as HTMLInputElement;
+
+    if (!customerEmail.value || !customerName.value) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Customer Details",
+        description: "Customer details must be filled out.",
+        duration: 3000,
+      });
+      return;
+    }
+    try {
+      const customer = await actions.createCustomer(
+        customerName.value,
+        customerEmail.value
+      );
+      if (!customer) {
+        throw Error("No customer returned.");
+      }
+      setCustomerId(customer.id);
+      onNext();
+    } catch (e) {
+      let errorMessage = "An unknown error occurred";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      } else if (typeof e === "object" && e !== null && "message" in e) {
+        errorMessage = String((e as { message: unknown }).message);
+      } else if (typeof e === "string") {
+        errorMessage = e;
+      }
+
+      toast({
+        variant: "destructive",
+        title: "Error Creating New Customer",
+        description: `Message: ${errorMessage}`,
+        duration: 3000,
+      });
+      return;
+    }
+  };
+
   return (
     <div>
       <h1 className="text-xl font-semibold mb-4">Provide Customer Id</h1>
+      <div className="space-y-2">
+        <h2 className="text-md">Create a Customer</h2>
+        <form className="mb-4 flex flex-row gap-x-6" onSubmit={createCustomer}>
+          <Input type="text" name="customerName" placeholder="Name" />
+          <Input type="email" name="customerEmail" placeholder="Email" />
+          <Button type="submit">Submit</Button>
+        </form>
+      </div>
+      <Separator className="my-10" />
       <div className="space-y-2">
         <h2 className="text-md">Manual</h2>
         <form

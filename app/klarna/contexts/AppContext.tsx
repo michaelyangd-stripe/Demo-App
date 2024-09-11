@@ -1,24 +1,25 @@
-// contexts/PasswordContext.tsx
+// contexts/AppContext.tsx
 "use client";
 
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { verifyPassword } from "../actions";
 
-type PasswordContextType = {
+type AppContextType = {
   password: string;
   authenticatePassword: (password: string) => Promise<void>;
   isAuthenticated: boolean | null;
+  isTestMode: boolean;
+  toggleTestMode: () => void;
 };
 
-const PasswordContext = createContext<PasswordContextType | undefined>(
-  undefined
-);
+const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export const PasswordProvider: React.FC<{ children: React.ReactNode }> = ({
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isTestMode, setIsTestMode] = useState(true);
 
   useEffect(() => {
     // Check session storage on initial load
@@ -27,6 +28,12 @@ export const PasswordProvider: React.FC<{ children: React.ReactNode }> = ({
       authenticatePassword(storedPassword);
     } else {
       setIsAuthenticated(false);
+    }
+
+    // Check for stored mode
+    const storedMode = localStorage.getItem("isTestMode");
+    if (storedMode !== null) {
+      setIsTestMode(storedMode === "true");
     }
   }, []);
 
@@ -42,23 +49,31 @@ export const PasswordProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const toggleTestMode = () => {
+    const newTestMode = !isTestMode;
+    setIsTestMode(newTestMode);
+    localStorage.setItem("isTestMode", String(newTestMode));
+  };
+
   return (
-    <PasswordContext.Provider
+    <AppContext.Provider
       value={{
         password,
         authenticatePassword,
         isAuthenticated,
+        isTestMode,
+        toggleTestMode,
       }}
     >
       {children}
-    </PasswordContext.Provider>
+    </AppContext.Provider>
   );
 };
 
-export const usePassword = () => {
-  const context = useContext(PasswordContext);
+export const useApp = () => {
+  const context = useContext(AppContext);
   if (context === undefined) {
-    throw new Error("usePassword must be used within a PasswordProvider");
+    throw new Error("useApp must be used within an AppProvider");
   }
   return context;
 };

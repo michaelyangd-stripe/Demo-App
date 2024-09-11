@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { usePassword } from "./contexts/PasswordContext";
 import { LoaderIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "./PasswordInput";
 import Flow from "./Flow";
+import { useApp } from "./contexts/AppContext";
 
 export default function Home() {
-  const { authenticatePassword, isAuthenticated } = usePassword();
+  const { authenticatePassword, isAuthenticated } = useApp();
   const [tempPassword, setTempPassword] = useState("");
 
   if (isAuthenticated === null) {

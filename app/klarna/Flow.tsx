@@ -60,7 +60,7 @@ export default function Flow() {
   ];
 
   return (
-    <div className="w-full md:w-[85%] max-w-xl flex flex-col mx-auto min-h-[100dvh] gap-y-2 items-center pt-5 px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] overflow-hidden">
+    <div className="w-full max-w-3xl px-4 2xl:px-0 flex flex-col mx-auto">
       <div className="flex flex-row w-full justify-between items-center">
         <button
           onClick={previousStep}

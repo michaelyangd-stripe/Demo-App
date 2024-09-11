@@ -13,11 +13,11 @@ export default function RedirectPage() {
       const customerId = localStorage.getItem("customerId");
       const lasId = localStorage.getItem("lasId");
       if (customerId && lasId) {
-        const session = await getFinancialConnectionsSession(lasId);
-        if (session.status === "succeeded") {
-          // Process the linked accounts
-          router.push("/");
-        }
+        // const session = await getFinancialConnectionsSession(lasId);
+        // if (session.status === "succeeded") {
+        //   // Process the linked accounts
+        //   router.push("/");
+        // }
       }
     };
 
