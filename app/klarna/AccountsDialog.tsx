@@ -92,8 +92,14 @@ export function AccountsDialog({
     >
       <DialogContent className="pt-12 px-10">
         <DialogHeader className="min-h-96">
-          <DialogTitle>Save as Payment Methods</DialogTitle>
-          <div className="grid grid-cols-1 gap-4 overflow-auto py-4">
+          <DialogTitle className="text-2xl tracking-tight">
+            Save as Payment Methods
+          </DialogTitle>
+          <p className="text-md text-muted-foreground">
+            We found {accounts.length} account{accounts.length > 1 ? "s" : ""}{" "}
+            that you can save
+          </p>
+          <div className="grid grid-cols-1 gap-2 overflow-auto py-4">
             {accounts.map((acc) => (
               <li
                 key={acc.id}
@@ -107,7 +113,12 @@ export function AccountsDialog({
           </div>
         </DialogHeader>
         <DialogFooter>
-          <Button type="submit" className="w-full" onClick={onSubmit}>
+          <Button
+            type="submit"
+            className="w-full"
+            onClick={onSubmit}
+            loading={isLoading}
+          >
             Save
           </Button>
         </DialogFooter>

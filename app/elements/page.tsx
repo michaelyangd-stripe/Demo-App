@@ -37,7 +37,7 @@ import {
 // recreating the Stripe object on every render.
 // This is your test publishable API key.
 const stripePromiseLivemode = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_STRIPE_LIVE_PUBLISHABLE_KEY!
   // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
 );
 

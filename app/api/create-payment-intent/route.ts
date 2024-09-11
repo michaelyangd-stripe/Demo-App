@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   const data = await request.json();
   const stripe = new Stripe(
     data.livemode
-      ? process.env.STRIPE_SECRET_KEY!
+      ? process.env.STRIPE_LIVE_SECRET_KEY!
       : process.env.STRIPE_TEST_SECRET_KEY!
   );
   console.log(data.livemode);

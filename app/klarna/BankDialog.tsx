@@ -24,6 +24,8 @@ import {
 } from "@/lib/stateId";
 import { useActions } from "./hooks/useActions";
 import { LoaderIcon } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 
 interface BankDialogProps {
   isOpen: boolean;
@@ -37,6 +39,7 @@ export function BankDialog({
   handleCompletedConnection,
 }: BankDialogProps) {
   const [dialogStep, setDialogStep] = useState(1);
+  const [consentChecked, setConsentChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { customer } = useApp();
@@ -49,6 +52,7 @@ export function BankDialog({
   useEffect(() => {
     if (isOpen) {
       setDialogStep(1);
+      setConsentChecked(false);
     }
   }, [isOpen]);
 
@@ -184,7 +188,7 @@ export function BankDialog({
     >
       <DialogContent className="pt-12 px-10">
         <DialogHeader className="min-h-96">
-          <DialogTitle>
+          <DialogTitle className="text-2xl tracking-tight">
             {(() => {
               if (dialogStep === 1) {
                 return "Link your bank account";
@@ -200,10 +204,23 @@ export function BankDialog({
           {(() => {
             if (dialogStep === 1) {
               return (
-                <DialogDescription>
-                  Upgrade your Klarna experience and unlock a new way to pay
-                  directly from your checking account.
-                </DialogDescription>
+                <div>
+                  <p className="text-md text-muted-foreground">
+                    Upgrade your Klarna experience and unlock a new way to pay
+                    directly from your checking account.
+                  </p>
+                  <div className="flex flex-col text-sm py-4 px-4 space-y-4">
+                    <span>
+                      Verify your bank details and get an additional layer of
+                      security
+                    </span>
+                    <Separator />
+                    <span>Never worry about expired cards again</span>
+                    <Separator />
+                    <span>Get the most accurate credit options</span>
+                    <Separator />
+                  </div>
+                </div>
               );
             }
             if (dialogStep === 2) {
@@ -231,7 +248,7 @@ export function BankDialog({
             }
             if (dialogStep === 3) {
               return (
-                <DialogDescription className="flex flex-col gap-2 justify-center items-center">
+                <DialogDescription className="flex flex-col gap-2 justify-center items-center py-6">
                   StateId: {stateIdToPoll}
                   <LoaderIcon className="animate-spin" />
                 </DialogDescription>
@@ -243,13 +260,31 @@ export function BankDialog({
           {(() => {
             if (dialogStep === 1) {
               return (
-                <Button
-                  type="submit"
-                  className="w-full"
-                  onClick={() => setDialogStep(2)}
-                >
-                  Continue with bank login
-                </Button>
+                <div className="space-y-4 w-full">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="terms"
+                      checked={consentChecked}
+                      onCheckedChange={(checked) =>
+                        setConsentChecked(!!checked)
+                      }
+                    />
+                    <label htmlFor="terms" className="text-xs">
+                      I agree to the above and authorize Klarna to view and take
+                      payments from my bank account per my existing payment
+                      authorizations. I've also reviewed Klarna's Privacy
+                      Notice.
+                    </label>
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={!consentChecked}
+                    onClick={() => setDialogStep(2)}
+                  >
+                    Continue with bank login
+                  </Button>
+                </div>
               );
             }
             if (dialogStep === 2) {

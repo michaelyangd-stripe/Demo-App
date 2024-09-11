@@ -1,5 +1,6 @@
 "use server";
 
+import { getBaseUrl } from "@/lib/utils";
 import Stripe from "stripe";
 
 function serializeData<T>(data: T): T {
@@ -112,6 +113,7 @@ export async function createFinancialConnectionsSession(
 ) {
   return withAuth(password, isTestMode, async (stripe) => {
     try {
+      const baseUrl = getBaseUrl();
       const session = await stripe.financialConnections.sessions.create({
         account_holder: {
           type: "customer",
@@ -127,7 +129,7 @@ export async function createFinancialConnectionsSession(
         // @ts-ignore
         filters: { countries: ["US"], institution: institutionId },
         hosted: {
-          return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/klarna/redirect?stateId=${stateId}`,
+          return_url: `${baseUrl}/klarna/redirect?stateId=${stateId}`,
         },
       });
       // console.log("session", session);

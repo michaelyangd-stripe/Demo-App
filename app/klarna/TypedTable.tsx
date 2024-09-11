@@ -34,7 +34,7 @@ const TypedTable = <TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
-        pageSize: 5,
+        pageSize: 10,
       },
     },
   });
@@ -84,7 +84,7 @@ const TypedTable = <TData, TValue>({
         </TableBody>
       </Table>
       {(table.getCanPreviousPage() || table.getCanNextPage()) && (
-        <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex items-center justify-end space-x-2 py-4 px-2">
           <Button
             variant="outline"
             size="sm"

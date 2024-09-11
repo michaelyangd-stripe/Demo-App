@@ -10,5 +10,5 @@ export const getBaseUrl = () => {
     return `${window.location.protocol}//${window.location.host}`;
   }
   // If window is not available (e.g., during SSR), you can return a default URL or use an environment variable
-  return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:7777";
+  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:7777";
 };

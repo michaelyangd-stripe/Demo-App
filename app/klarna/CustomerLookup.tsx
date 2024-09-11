@@ -26,6 +26,8 @@ import { LivemodeBadge, TestmodeBadge } from "./EnvironmentBadge";
 
 export default function CustomerLookup({ onNext }: { onNext: () => void }) {
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [manualSearchLoading, setManualSearchLoading] = useState(false);
+  const [emailSearchLoading, setEmailSearchLoading] = useState(false);
   const { toast } = useToast();
   const actions = useActions();
   const { setCustomerId } = useApp();
@@ -41,6 +43,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
 
   const onEmailSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setEmailSearchLoading(true);
     const form = e.currentTarget;
     const customerEmail = form.elements.namedItem(
       "customerEmail"
@@ -64,31 +67,45 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
         description: "Please provide an email to look up.",
         duration: 3000,
       });
+      setEmailSearchLoading(false);
       return;
     }
-
-    const response = await actions.fetchCustomers(
-      customerEmail.value,
-      testmode
-    );
-    if (response && response.data) {
-      if (response.data.length === 0) {
-        toast({
-          variant: "destructive",
-          title: "No Customer Found",
-          description: "There were no cusomters found for this email.",
-          duration: 3000,
-        });
-        return;
-      }
-      setCustomers(
-        response.data.map((customer) => ({
-          id: customer.id,
-          email: customer.email || "",
-          name: customer.name || "",
-          testmode: !customer.livemode,
-        }))
+    try {
+      const response = await actions.fetchCustomers(
+        customerEmail.value,
+        testmode
       );
+      if (response && response.data) {
+        if (response.data.length === 0) {
+          toast({
+            variant: "destructive",
+            title: "No Customer Found",
+            description: "There were no cusomters found for this email.",
+            duration: 3000,
+          });
+          setEmailSearchLoading(false);
+          return;
+        }
+        setCustomers(
+          response.data.map((customer) => ({
+            id: customer.id,
+            email: customer.email || "",
+            name: customer.name || "",
+            testmode: !customer.livemode,
+          }))
+        );
+      }
+      setEmailSearchLoading(false);
+    } catch (error) {
+      console.error("Error searching customer by email:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          "An error occurred while searching by email. Please try again.",
+        duration: 3000,
+      });
+      setEmailSearchLoading(false);
     }
   };
 
@@ -140,6 +157,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
 
   const handleManualSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setManualSearchLoading(true);
     const form = e.currentTarget;
     const customerId = form.elements.namedItem(
       "customerId"
@@ -163,6 +181,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
         description: "Customer ID must start with 'cus_'",
         duration: 3000,
       });
+      setManualSearchLoading(false);
       return;
     }
 
@@ -175,6 +194,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
           description: "No customer found with the provided ID.",
           duration: 3000,
         });
+        setManualSearchLoading(false);
         return;
       }
 
@@ -185,6 +205,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
           description: "Customer was found but have been deleted.",
           duration: 3000,
         });
+        setManualSearchLoading(false);
         return;
       }
 
@@ -196,6 +217,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
         stateIds: {},
       });
       setCustomerId(customer.id);
+      setManualSearchLoading(false);
       onNext();
     } catch (error) {
       console.error("Error fetching customer:", error);
@@ -206,6 +228,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
           "An error occurred while fetching the customer. Please try again.",
         duration: 3000,
       });
+      setManualSearchLoading(false);
     }
   };
 
@@ -318,7 +341,9 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
                     defaultChecked={false}
                   />
                 </div>
-                <Button type="submit">Submit</Button>
+                <Button type="submit" loading={manualSearchLoading}>
+                  Submit
+                </Button>
               </form>
             </div>
           </Card>
@@ -349,7 +374,9 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
                       defaultChecked={false}
                     />
                   </div>
-                  <Button type="submit">Search</Button>
+                  <Button type="submit" loading={emailSearchLoading}>
+                    Search
+                  </Button>
                 </form>
               </div>
             </Card>
