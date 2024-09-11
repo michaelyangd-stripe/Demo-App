@@ -235,6 +235,7 @@ export function BankDialog({
                       disabled={isLoading}
                     >
                       <Image
+                        className="rounded-md"
                         src={inst.imageUrl}
                         alt={inst.name}
                         width={50}

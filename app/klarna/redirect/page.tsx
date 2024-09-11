@@ -27,13 +27,24 @@ const _RedirectPage = () => {
       updateStateData(stateData?.customerId, stateId, {
         status: "completed",
       });
-      window.close();
+      transferFocusAndCloseWindow();
     } catch (e) {
       setTextToShow("Update State Failed");
     }
   }, [searchParams]);
 
   return <div>{textToShow}</div>;
+};
+
+const transferFocusAndCloseWindow = () => {
+  // Attempt to focus the parent window
+  if (window.opener && !window.opener.closed) {
+    window.opener.focus();
+  }
+  // Close this window after a short delay
+  setTimeout(() => {
+    window.close();
+  }, 100);
 };
 
 const RedirectPage = () => {

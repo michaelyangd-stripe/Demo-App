@@ -1,19 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeftIcon, Link } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import CustomerStep from "./CustomerStep";
 import PaymentMethodList from "./PaymentMethodList";
-import { useApp } from "./contexts/AppContext";
-import { Card } from "@/components/ui/card";
+import { Confetti, ConfettiRef } from "@/components/ui/confetti";
 
 export default function Flow() {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [direction, setDirection] = useState(0);
-  const { customer } = useApp();
+  const confettiRef = useRef<ConfettiRef>(null);
 
   const pageVariants = {
     initial: (direction: number) => {
@@ -66,11 +62,20 @@ export default function Flow() {
 
   const steps = [
     <CustomerStep key="0" onNext={nextStep} />,
-    <PaymentMethodList key="1" onBackClick={previousStep} />,
+    <PaymentMethodList
+      key="1"
+      onBackClick={previousStep}
+      onSuccess={() => confettiRef.current?.fire({})}
+    />,
   ];
 
   return (
     <div className="w-full max-w-3xl px-4 2xl:px-0 flex flex-col mx-auto">
+      <Confetti
+        ref={confettiRef}
+        className="absolute left-0 top-0 z-0 size-full"
+        manualstart
+      />
       <div className="flex justify-around rounded py-4 mb-4 w-full select-none">
         <Step
           step={0}

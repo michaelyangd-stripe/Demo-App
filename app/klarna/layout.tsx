@@ -29,6 +29,7 @@ const NavBar = () => (
     </div>
   </div>
 );
+
 export default function RootLayout({
   children,
 }: Readonly<{

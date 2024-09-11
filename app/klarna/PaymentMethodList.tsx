@@ -56,8 +56,10 @@ const columns: ColumnDef<PaymentMethod>[] = [
 
 export default function PaymentMethodList({
   onBackClick,
+  onSuccess,
 }: {
   onBackClick: () => void;
+  onSuccess: () => void;
 }) {
   const [paymentMethods, setPaymentMethods] = useState<Stripe.PaymentMethod[]>(
     []
@@ -82,6 +84,11 @@ export default function PaymentMethodList({
 
   const handleCompletedConnection = async (stateId: string) => {
     setIsLoading(true);
+    try {
+      window?.focus();
+    } catch (error) {
+      console.log(error);
+    }
     const stateInfo = getStateDataByStateId(stateId);
     if (!stateInfo || !stateInfo.stateData.fcId) {
       toast({
@@ -122,6 +129,7 @@ export default function PaymentMethodList({
 
   const handleCompletedPaymentMethodSave = () => {
     fetchPaymentMethods();
+    onSuccess();
   };
 
   if (isLoading) {
