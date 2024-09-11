@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   getStateDataByStateId,
   updateStateData,
 } from "@/app/klarna/localstorage";
 
-export default function RedirectPage() {
+const _RedirectPage = () => {
   const searchParams = useSearchParams();
   const [textToShow, setTextToShow] = useState<string>(
     "Processing, please wait..."
@@ -34,4 +34,13 @@ export default function RedirectPage() {
   }, [searchParams]);
 
   return <div>{textToShow}</div>;
-}
+};
+
+const RedirectPage = () => {
+  return (
+    <Suspense>
+      <_RedirectPage />
+    </Suspense>
+  );
+};
+export default RedirectPage;
