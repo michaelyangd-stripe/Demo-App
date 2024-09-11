@@ -39,8 +39,8 @@ export function BankDialog({
   const [dialogStep, setDialogStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { isTestMode, customer } = useApp();
-  const institutions = isTestMode ? testInstitutions : liveInstitutions;
+  const { customer } = useApp();
+  const institutions = customer!.testmode ? testInstitutions : liveInstitutions;
   const actions = useActions();
   const [stateIdToPoll, setStateIdToPoll] = useState<string | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -92,7 +92,15 @@ export function BankDialog({
   }, [isOpen, stateIdToPoll, customer?.id]);
 
   if (!customer) {
-    return <div>You need customer set</div>;
+    if (isOpen) {
+      toast({
+        variant: "destructive",
+        title: "Customer Required",
+        description: "Customer must be set to open Bank Dialog",
+        duration: 3000,
+      });
+    }
+    return null;
   }
 
   const onInstitutionSelect = async (institutionId: string) => {

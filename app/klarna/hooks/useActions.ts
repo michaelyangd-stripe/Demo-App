@@ -5,21 +5,25 @@ import * as serverActions from "../actions";
 import { useMemo } from "react";
 
 export function useActions() {
-  const { password, isTestMode, customer } = useApp();
+  const { password, customer } = useApp();
 
   return useMemo(
     () => ({
-      createCustomer: (name: string, email: string) =>
+      createCustomer: (name: string, email: string, isTestMode: boolean) =>
         serverActions.createCustomer(name, email, password, isTestMode),
 
-      fetchCustomers: (email: string) =>
+      fetchCustomers: (email: string, isTestMode: boolean) =>
         serverActions.fetchCustomers(email, password, isTestMode),
 
-      fetchCustomer: (customerId: string) =>
+      fetchCustomer: (customerId: string, isTestMode: boolean) =>
         serverActions.fetchCustomer(customerId, password, isTestMode),
 
       getPaymentMethods: () =>
-        serverActions.getPaymentMethods(customer!.id, password, isTestMode),
+        serverActions.getPaymentMethods(
+          customer!.id,
+          password,
+          customer!.testmode
+        ),
 
       createFinancialConnectionsSession: (
         institutionId: string,
@@ -49,6 +53,6 @@ export function useActions() {
           customer!.testmode
         ),
     }),
-    [customer?.id, password, isTestMode]
+    [customer?.id, password]
   );
 }

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { AppProvider } from "./contexts/AppContext";
-import { ModeToggle } from "./ModeToggle";
+import EnvironmentBadge from "./EnvironmentBadge";
 import Image from "next/image";
+import SelectedCustomer from "./SelectedCustomer";
 Image;
 
 export const metadata: Metadata = {
@@ -16,8 +17,8 @@ export default function RootLayout({
 }>) {
   return (
     <AppProvider>
-      <div className="flex flex-row justify-between items-center px-4 2xl:px-0 my-4">
-        <div className="flex flex-row justify-center items-center gap-x-2">
+      <div className="flex flex-row w-full justify-between items-center px-4 2xl:px-0 my-4">
+        <div className="flex-1 flex justify-start">
           <Image
             src="/klarna_logo.svg"
             width={50}
@@ -26,7 +27,12 @@ export default function RootLayout({
             priority
           />
         </div>
-        <ModeToggle />
+        <div className="flex-1 flex justify-center">
+          <EnvironmentBadge />
+        </div>
+        <div className="flex-1 flex justify-end">
+          <SelectedCustomer />
+        </div>
       </div>
       {children}
     </AppProvider>

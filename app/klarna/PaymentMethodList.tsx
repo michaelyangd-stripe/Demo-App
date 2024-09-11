@@ -2,14 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Stripe from "stripe";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { getStateDataByStateId } from "@/lib/stateId";
 import { useActions } from "./hooks/useActions";
@@ -17,10 +9,56 @@ import { useApp } from "./contexts/AppContext";
 import { BankDialog } from "./BankDialog";
 import { AccountsDialog } from "./AccountsDialog";
 import { Button } from "@/components/ui/button";
-import { Link } from "lucide-react";
+import { LinkIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ColumnDef } from "@tanstack/react-table";
+import TypedTable from "./TypedTable";
+import { AlertTriangleIcon } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-export default function PaymentMethodList({ onNext }: { onNext: () => void }) {
+type PaymentMethod = {
+  id: string;
+  bankName: string;
+  accountType: string;
+  last4: string;
+};
+
+const columns: ColumnDef<PaymentMethod>[] = [
+  {
+    accessorKey: "bankName",
+    header: "Bank",
+  },
+  {
+    accessorKey: "accountType",
+    header: "Type",
+  },
+  {
+    accessorKey: "last4",
+    header: "Last 4",
+  },
+  {
+    accessorKey: "id",
+    header: "FCA",
+    cell: ({ row }) => (
+      <a
+        href={`https://go/o/${row.original.id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Badge>
+          <LinkIcon className="w-3 h-3 mr-1" />
+          {row.original.id}
+        </Badge>
+      </a>
+    ),
+  },
+];
+
+export default function PaymentMethodList({
+  onBackClick,
+}: {
+  onBackClick: () => void;
+}) {
   const [paymentMethods, setPaymentMethods] = useState<Stripe.PaymentMethod[]>(
     []
   );
@@ -88,47 +126,53 @@ export default function PaymentMethodList({ onNext }: { onNext: () => void }) {
   if (isLoading) {
     return <div>Processing completed session</div>;
   }
+
+  if (!customer) {
+    return (
+      <Alert>
+        <AlertTriangleIcon className="h-4 w-4" />
+        <AlertTitle>Heads up!</AlertTitle>
+        <AlertDescription className="flex flex-col space-y-2">
+          <span>You must select a customer first</span>
+          <Button className="w-fit" onClick={onBackClick}>
+            Add a Customer
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   const fetchPaymentMethods = async () => {
     const methods = await actions.getPaymentMethods();
     setPaymentMethods(methods);
   };
 
+  const paymentMethodsData: PaymentMethod[] =
+    paymentMethods.length > 0
+      ? paymentMethods.map((pm) => ({
+          id: pm.us_bank_account?.financial_connections_account || "",
+          bankName: pm.us_bank_account?.bank_name || "",
+          accountType: pm.us_bank_account?.account_type || "",
+          last4: pm.us_bank_account?.last4 || "",
+        }))
+      : [];
+
   return (
-    <div className="mb-6">
-      <h2 className="text-xl font-semibold">Saved Payment Methods</h2>
-      <div className="grid grid-cols-2 gap-4 overflow-auto py-4">
-        {paymentMethods.length > 0 ? (
-          paymentMethods.map((pm) => (
-            <Card key={pm.id}>
-              <CardHeader className="px-4 py-3">
-                <CardTitle className="text-lg">
-                  {pm.us_bank_account?.bank_name}
-                </CardTitle>
-                <CardDescription>
-                  {`${pm.us_bank_account?.account_type} - ${pm.us_bank_account?.last4}`}
-                </CardDescription>
-              </CardHeader>
-              <CardFooter className="px-4 py-3">
-                <a
-                  href={`https://go/o/${pm.us_bank_account?.financial_connections_account}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Badge>
-                    <Link className="w-3 h-3 mr-1" />
-                    {pm.us_bank_account?.financial_connections_account}
-                  </Badge>
-                </a>
-              </CardFooter>
-            </Card>
-          ))
-        ) : (
-          <div>No payment methods found.</div>
-        )}
+    <div className="mb-6 space-y-4">
+      <div className="flex flex-row justify-between">
+        <div>
+          <h1 className="text-4xl font-extrabold tracking-tight">
+            Saved Payment Methods
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            Mimicking Klarna's payment method settings page
+          </p>
+        </div>
+        <Button onClick={() => setOpenBankDialog(true)}>
+          Add Payment Method
+        </Button>
       </div>
-      <Button onClick={() => setOpenBankDialog(true)}>
-        Add Payment Method
-      </Button>
+      <TypedTable columns={columns} data={paymentMethodsData} />
       <BankDialog
         isOpen={openBankDialog}
         onClose={() => setOpenBankDialog(false)}

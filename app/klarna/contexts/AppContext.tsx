@@ -10,8 +10,6 @@ type AppContextType = {
   password: string;
   authenticatePassword: (password: string) => Promise<void>;
   isAuthenticated: boolean | null;
-  isTestMode: boolean;
-  toggleTestMode: () => void;
   customer: CustomerData | null;
   setCustomerId: (customerId: string | null) => void;
 };
@@ -23,7 +21,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [isTestMode, setIsTestMode] = useState(true);
   const [customerId, setCustomerId] = useState<string | null>(null);
   const [customer, setCustomerData] = useState<CustomerData | null>(null);
 
@@ -46,12 +43,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     } else {
       setIsAuthenticated(false);
     }
-
-    // Check for stored mode
-    const storedMode = localStorage.getItem("isTestMode");
-    if (storedMode !== null) {
-      setIsTestMode(storedMode === "true");
-    }
   }, []);
 
   const authenticatePassword = async (newPassword: string) => {
@@ -66,20 +57,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const toggleTestMode = () => {
-    const newTestMode = !isTestMode;
-    setIsTestMode(newTestMode);
-    localStorage.setItem("isTestMode", String(newTestMode));
-  };
-
   return (
     <AppContext.Provider
       value={{
         password,
         authenticatePassword,
         isAuthenticated,
-        isTestMode,
-        toggleTestMode,
         customer,
         setCustomerId,
       }}

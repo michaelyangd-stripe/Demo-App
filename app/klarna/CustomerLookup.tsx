@@ -4,14 +4,7 @@ import { FormEvent, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useActions } from "./hooks/useActions";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-} from "@tanstack/react-table";
-import { Separator } from "@/components/ui/separator";
+import { ColumnDef } from "@tanstack/react-table";
 import { getAllCustomers } from "@/lib/stateId";
 
 type Customer = {
@@ -21,112 +14,17 @@ type Customer = {
   testmode: boolean;
 };
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "./contexts/AppContext";
 import { saveCustomerData } from "@/lib/stateId";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}
-
-const CustomerTable = <TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) => {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 5,
-      },
-    },
-  });
-
-  return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      {(table.getCanPreviousPage() || table.getCanNextPage()) && (
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      )}
-    </div>
-  );
-};
+import TypedTable from "./TypedTable";
+import { Switch } from "@/components/ui/switch";
+import { LivemodeBadge, TestmodeBadge } from "./EnvironmentBadge";
 
 export default function CustomerLookup({ onNext }: { onNext: () => void }) {
-  const [email, setEmail] = useState("");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const { toast } = useToast();
   const actions = useActions();
@@ -141,9 +39,25 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
       testmode: data.testmode,
     }));
 
-  const fetchCustomers = async (e: React.FormEvent) => {
+  const onEmailSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email) {
+    const form = e.currentTarget;
+    const customerEmail = form.elements.namedItem(
+      "customerEmail"
+    ) as HTMLInputElement;
+    const testmodeElements = form.elements.namedItem(
+      "testmode"
+    ) as RadioNodeList;
+
+    // Check if any of the elements in the RadioNodeList is checked
+    const testmode = Array.from(testmodeElements).some((element) => {
+      if (element instanceof HTMLInputElement) {
+        return element.checked;
+      }
+      return false;
+    });
+
+    if (!customerEmail.value) {
       toast({
         variant: "destructive",
         title: "Empty E-mail",
@@ -153,7 +67,10 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
       return;
     }
 
-    const response = await actions.fetchCustomers(email);
+    const response = await actions.fetchCustomers(
+      customerEmail.value,
+      testmode
+    );
     if (response && response.data) {
       if (response.data.length === 0) {
         toast({
@@ -190,20 +107,10 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
     },
     {
       accessorKey: "testmode",
-      header: "testmode",
+      header: "Environment",
       cell: ({ row }) => {
         if (typeof row.original.testmode == "boolean") {
-          return (
-            <Badge
-              className={
-                row.original.testmode
-                  ? "bg-[#ff8f0e] text-white"
-                  : "bg-[#4299e1] text-white"
-              }
-            >
-              {row.original.testmode ? "test" : "livemode"}
-            </Badge>
-          );
+          return row.original.testmode ? <TestmodeBadge /> : <LivemodeBadge />;
         }
       },
     },
@@ -237,6 +144,18 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
     const customerId = form.elements.namedItem(
       "customerId"
     ) as HTMLInputElement;
+    const testmodeElements = form.elements.namedItem(
+      "testmode"
+    ) as RadioNodeList;
+
+    // Check if any of the elements in the RadioNodeList is checked
+    const testmode = Array.from(testmodeElements).some((element) => {
+      if (element instanceof HTMLInputElement) {
+        return element.checked;
+      }
+      return false;
+    });
+
     if (!customerId.value.startsWith("cus_")) {
       toast({
         variant: "destructive",
@@ -248,7 +167,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
     }
 
     try {
-      const customer = await actions.fetchCustomer(customerId.value);
+      const customer = await actions.fetchCustomer(customerId.value, testmode);
       if (!customer) {
         toast({
           variant: "destructive",
@@ -299,6 +218,17 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
     const customerName = form.elements.namedItem(
       "customerName"
     ) as HTMLInputElement;
+    const testmodeElements = form.elements.namedItem(
+      "testmode"
+    ) as RadioNodeList;
+
+    // Check if any of the elements in the RadioNodeList is checked
+    const testmode = Array.from(testmodeElements).some((element) => {
+      if (element instanceof HTMLInputElement) {
+        return element.checked;
+      }
+      return false;
+    });
 
     if (!customerEmail.value || !customerName.value) {
       toast({
@@ -312,7 +242,8 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
     try {
       const customer = await actions.createCustomer(
         customerName.value,
-        customerEmail.value
+        customerEmail.value,
+        testmode
       );
       if (!customer) {
         throw new Error("No customer returned from createCustomer.");
@@ -364,7 +295,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
           <TabsTrigger value="create">Create</TabsTrigger>
         </TabsList>
         <TabsContent value="saved">
-          <CustomerTable columns={columns} data={savedCustomers} />
+          <TypedTable columns={columns} data={savedCustomers} />
         </TabsContent>
         <TabsContent value="searchId">
           <Card>
@@ -377,6 +308,16 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
                 onSubmit={handleManualSubmit}
               >
                 <Input type="text" name="customerId" placeholder="cus_" />
+                <div className="flex flex-row pt-1 pb-2 items-center self-end">
+                  <label className="text-sm pr-2" htmlFor="testmode">
+                    Testmode
+                  </label>
+                  <Switch
+                    name="testmode"
+                    id="testmode"
+                    defaultChecked={false}
+                  />
+                </div>
                 <Button type="submit">Submit</Button>
               </form>
             </div>
@@ -385,28 +326,36 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
         <TabsContent value="searchEmail">
           <div className="space-y-2">
             <Card>
-              <div className="space-y-2 flex flex-col justify-center items-center min-h-[146px] my-4">
+              <div className="space-y-2 flex flex-col justify-center items-center min-h-[300px] my-4">
                 <h2 className="text-xl font-extrabold tracking-tight">
                   Serach by Email
                 </h2>
                 <form
-                  onSubmit={fetchCustomers}
-                  className="flex flex-row gap-x-4 w-full max-w-[300px]"
+                  onSubmit={onEmailSearch}
+                  className="mb-4 flex flex-col gap-x-6 space-y-2 w-full max-w-[300px]"
                 >
                   <Input
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    name="customerEmail"
                     placeholder="email"
-                    className="mb-2"
                   />
+                  <div className="flex flex-row pt-1 pb-2 items-center self-end">
+                    <label className="text-sm pr-2" htmlFor="testmode">
+                      Testmode
+                    </label>
+                    <Switch
+                      name="testmode"
+                      id="testmode"
+                      defaultChecked={false}
+                    />
+                  </div>
                   <Button type="submit">Search</Button>
                 </form>
               </div>
             </Card>
 
             <div className="w-full">
-              <CustomerTable columns={columns} data={customers} />
+              <TypedTable columns={columns} data={customers} />
             </div>
           </div>
         </TabsContent>
@@ -422,6 +371,16 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
               >
                 <Input type="text" name="customerName" placeholder="Name" />
                 <Input type="email" name="customerEmail" placeholder="Email" />
+                <div className="flex flex-row pt-1 pb-2 items-center self-end">
+                  <label className="text-sm pr-2" htmlFor="testmode">
+                    Testmode
+                  </label>
+                  <Switch
+                    name="testmode"
+                    id="testmode"
+                    defaultChecked={false}
+                  />
+                </div>
                 <Button type="submit">Submit</Button>
               </form>
             </div>

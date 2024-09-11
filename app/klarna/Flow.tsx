@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import CustomerLookup from "./CustomerLookup";
 import PaymentMethodList from "./PaymentMethodList";
 import { useApp } from "./contexts/AppContext";
+import { Card } from "@/components/ui/card";
 
 export default function Flow() {
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -51,45 +52,39 @@ export default function Flow() {
     window.scrollTo({ top: 0 });
   };
 
+  const goToStep = (stepNumber: number) => {
+    if (stepNumber > currentStep) {
+      setDirection(1);
+      setCurrentStep(stepNumber);
+      window.scrollTo({ top: 0 });
+    } else if (stepNumber < currentStep) {
+      setDirection(-1);
+      setCurrentStep(stepNumber);
+      window.scrollTo({ top: 0 });
+    }
+  };
+
   const steps = [
     <CustomerLookup key="0" onNext={nextStep} />,
-    <PaymentMethodList key="1" onNext={nextStep} />,
+    <PaymentMethodList key="1" onBackClick={previousStep} />,
   ];
 
   return (
     <div className="w-full max-w-3xl px-4 2xl:px-0 flex flex-col mx-auto">
-      <div className="flex flex-row w-full justify-between items-center">
-        <button
-          onClick={previousStep}
-          type="button"
-          className={cn("transition-all w-fit h-fit", {
-            "opacity-0": currentStep === 0,
-          })}
-        >
-          <span className="sr-only">Back</span>
-          <ArrowLeftIcon className="w-6 h-6 text-otsa_black hover:text-gray-600 transition-all" />
-        </button>
-        {customer?.id && (
-          <h2 className="text-md font-semibold">
-            Selected Customer:{" "}
-            <a
-              href={`https://go/o/${customer?.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Badge>
-                <Link className="w-3 h-3 mr-1" />
-                {customer?.id}
-              </Badge>
-            </a>
-          </h2>
-        )}
-      </div>
-      <div className="flex justify-between rounded py-2 mb-2 w-full select-none">
-        <Step step={0} currentStep={currentStep} />
-        <Step step={1} currentStep={currentStep} />
-        <Step step={2} currentStep={currentStep} />
-      </div>
+      <Card className="flex justify-around rounded py-4 mb-4 w-full select-none">
+        <Step
+          step={0}
+          currentStep={currentStep}
+          onClick={() => goToStep(0)}
+          title="Customer"
+        />
+        <Step
+          step={1}
+          currentStep={currentStep}
+          onClick={() => goToStep(1)}
+          title="Payment Methods"
+        />
+      </Card>
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.div
           key={currentStep}
@@ -108,7 +103,17 @@ export default function Flow() {
   );
 }
 
-function Step({ step, currentStep }: { step: number; currentStep: number }) {
+function Step({
+  step,
+  currentStep,
+  title,
+  onClick,
+}: {
+  step: number;
+  currentStep: number;
+  title: string;
+  onClick: () => void;
+}) {
   let status =
     currentStep === step
       ? "active"
@@ -117,7 +122,11 @@ function Step({ step, currentStep }: { step: number; currentStep: number }) {
       : "complete";
 
   return (
-    <motion.div animate={status} className="relative">
+    <motion.div
+      animate={status}
+      className="relative flex flex-col justify-center items-center space-y-0.5 cursor-pointer"
+      onClick={onClick}
+    >
       <motion.div
         variants={{
           active: {
@@ -139,7 +148,24 @@ function Step({ step, currentStep }: { step: number; currentStep: number }) {
         }}
         className="absolute inset-0 rounded-full"
       ></motion.div>
-
+      <motion.span
+        initial={false}
+        variants={{
+          inactive: {
+            color: "hsl(var(--muted))",
+          },
+          active: {
+            color: "hsl(var(--primary))",
+          },
+          complete: {
+            color: "hsl(var(--primary))",
+          },
+        }}
+        transition={{ duration: 0.2 }}
+        className="text-[0.5rem]"
+      >
+        {title}
+      </motion.span>
       <motion.div
         initial={false}
         variants={{

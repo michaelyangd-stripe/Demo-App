@@ -33,7 +33,15 @@ export function AccountsDialog({
   const actions = useActions();
 
   if (!customer) {
-    return <div>You need customer set</div>;
+    if (isOpen) {
+      toast({
+        variant: "destructive",
+        title: "Customer Required",
+        description: "Customer must be set to open Bank Dialog",
+        duration: 3000,
+      });
+    }
+    return null;
   }
 
   const onSubmit = async () => {
