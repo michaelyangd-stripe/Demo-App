@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeftIcon, Link } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import CustomerLookup from "./CustomerLookup";
+import CustomerStep from "./CustomerStep";
 import PaymentMethodList from "./PaymentMethodList";
 import { useApp } from "./contexts/AppContext";
 import { Card } from "@/components/ui/card";
@@ -65,13 +65,13 @@ export default function Flow() {
   };
 
   const steps = [
-    <CustomerLookup key="0" onNext={nextStep} />,
+    <CustomerStep key="0" onNext={nextStep} />,
     <PaymentMethodList key="1" onBackClick={previousStep} />,
   ];
 
   return (
     <div className="w-full max-w-3xl px-4 2xl:px-0 flex flex-col mx-auto">
-      <Card className="flex justify-around rounded py-4 mb-4 w-full select-none">
+      <div className="flex justify-around rounded py-4 mb-4 w-full select-none">
         <Step
           step={0}
           currentStep={currentStep}
@@ -84,7 +84,7 @@ export default function Flow() {
           onClick={() => goToStep(1)}
           title="Payment Methods"
         />
-      </Card>
+      </div>
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.div
           key={currentStep}

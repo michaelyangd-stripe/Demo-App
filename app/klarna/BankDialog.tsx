@@ -270,10 +270,10 @@ export function BankDialog({
                       }
                     />
                     <label htmlFor="terms" className="text-xs">
-                      I agree to the above and authorize Klarna to view and take
+                      {`I agree to the above and authorize Klarna to view and take
                       payments from my bank account per my existing payment
                       authorizations. I've also reviewed Klarna's Privacy
-                      Notice.
+                      Notice.`}
                     </label>
                   </div>
                   <Button

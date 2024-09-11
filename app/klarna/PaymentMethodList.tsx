@@ -165,7 +165,7 @@ export default function PaymentMethodList({
             Saved Payment Methods
           </h1>
           <p className="text-xl text-muted-foreground">
-            Mimicking Klarna's payment method settings page
+            {`Mimicking Klarna's payment method settings page`}
           </p>
         </div>
         <Button onClick={() => setOpenBankDialog(true)}>

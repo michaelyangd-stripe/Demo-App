@@ -10,6 +10,25 @@ export const metadata: Metadata = {
   description: "demo demo demo",
 };
 
+const NavBar = () => (
+  <div className="flex flex-row w-full justify-between items-center px-4 2xl:px-0 my-4">
+    <div className="flex-1 flex justify-start">
+      <Image
+        src="/klarna_logo.svg"
+        width={50}
+        height={50}
+        alt="Klarna Logo"
+        priority
+      />
+    </div>
+    <div className="flex-1 flex justify-center">
+      <EnvironmentBadge />
+    </div>
+    <div className="flex-1 flex justify-end">
+      <SelectedCustomer />
+    </div>
+  </div>
+);
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,24 +36,10 @@ export default function RootLayout({
 }>) {
   return (
     <AppProvider>
-      <div className="flex flex-row w-full justify-between items-center px-4 2xl:px-0 my-4">
-        <div className="flex-1 flex justify-start">
-          <Image
-            src="/klarna_logo.svg"
-            width={50}
-            height={50}
-            alt="Klarna Logo"
-            priority
-          />
-        </div>
-        <div className="flex-1 flex justify-center">
-          <EnvironmentBadge />
-        </div>
-        <div className="flex-1 flex justify-end">
-          <SelectedCustomer />
-        </div>
+      <div className="flex flex-col h-full">
+        <NavBar />
+        <div className="flex-1">{children}</div>
       </div>
-      {children}
     </AppProvider>
   );
 }
