@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useActions } from "../hooks/useActions";
 import { ColumnDef } from "@tanstack/react-table";
 import { getAllCustomers } from "@/app/klarna/localstorage";
+import { SearchIcon, PlusIcon, SaveIcon } from "lucide-react";
 
 type Customer = {
   id: string;
@@ -185,10 +186,22 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
       </div>
       <Tabs defaultValue="saved" className="space-y-2">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="saved">Saved</TabsTrigger>
-          <TabsTrigger value="searchId">ID Search</TabsTrigger>
-          <TabsTrigger value="searchEmail">Email Search</TabsTrigger>
-          <TabsTrigger value="create">Create</TabsTrigger>
+          <TabsTrigger value="saved">
+            <SaveIcon className="w-3 h-3 mr-1" />
+            Saved
+          </TabsTrigger>
+          <TabsTrigger value="searchId">
+            <SearchIcon className="w-3 h-3 mr-1" />
+            ID
+          </TabsTrigger>
+          <TabsTrigger value="searchEmail">
+            <SearchIcon className="w-3 h-3 mr-1" />
+            Email
+          </TabsTrigger>
+          <TabsTrigger value="create">
+            <PlusIcon className="w-3 h-3 mr-1" />
+            New
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="saved">
           <TypedTable columns={columns} data={savedCustomers} loading={false} />
