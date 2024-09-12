@@ -260,11 +260,13 @@ export function BankDialog({
                   <LoaderIcon className="animate-spin" />
                   <div className="flex flex-col gap-2">
                     <p className="text-xs text-muted-foreground mt-4">
-                      If a window didn't open automatically,{" "}
-                      <a href={url} target="_blank" className="underline">
-                        try opening it again
-                      </a>
-                      .
+                      {`If a window didn't open automatically, `}
+                      <span className="inline-block">
+                        <a href={url} target="_blank" className="underline">
+                          try opening it again
+                        </a>
+                        .
+                      </span>
                     </p>
                   </div>
                 </DialogDescription>
