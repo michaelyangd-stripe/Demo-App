@@ -1,6 +1,6 @@
 // components/BankDialog.tsx
-import { FormEvent, useState } from "react";
-import Image from "next/image";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useApp } from "./contexts/AppContext";
 import { useActions } from "./hooks/useActions";
 import Stripe from "stripe";
+import { cn } from "@/lib/utils";
+import { AlertTriangleIcon } from "lucide-react";
 
 interface AccountsDialogProps {
   isOpen: boolean;
@@ -31,7 +33,9 @@ export function AccountsDialog({
   const { toast } = useToast();
   const { customer } = useApp();
   const actions = useActions();
-
+  const supportedAccounts = accounts.filter((account) =>
+    account.supported_payment_method_types.includes("us_bank_account")
+  );
   if (!customer) {
     if (isOpen) {
       toast({
@@ -47,9 +51,11 @@ export function AccountsDialog({
   const onSubmit = async () => {
     setIsLoading(true);
     try {
-      const accountIds = accounts.map((account) => account.id);
+      const supportedAccountIds = supportedAccounts.map(
+        (account) => account.id
+      );
       const session = await actions.createPaymentMethodsFromAccounts(
-        accountIds
+        supportedAccountIds
       );
 
       if (!session) {
@@ -95,29 +101,52 @@ export function AccountsDialog({
           <DialogTitle className="text-2xl tracking-tight">
             Save as Payment Methods
           </DialogTitle>
-          {accounts.length === 0 ? (
-            <p className="text-md text-muted-foreground">No accounts found</p>
-          ) : (
-            <p className="text-md text-muted-foreground">
-              We found {accounts.length} account{accounts.length > 1 ? "s" : ""}{" "}
-              that you can save
-            </p>
-          )}
+          <p className="text-md text-muted-foreground">
+            {(() => {
+              if (accounts.length === 0) {
+                return "No accounts found.";
+              }
+              if (accounts.length !== supportedAccounts.length) {
+                return `We found ${accounts.length} account${
+                  accounts.length === 1 ? "" : "s"
+                }, out of which ${supportedAccounts.length} ${
+                  supportedAccounts.length === 1 ? "is" : "are"
+                } supported`;
+              }
+              return `We found ${accounts.length} account${
+                accounts.length === 1 ? "" : "s"
+              } that you can save`;
+            })()}
+          </p>
           <div className="grid grid-cols-1 gap-2 overflow-auto py-4">
             {accounts.map((acc) => (
-              <li
-                key={acc.id}
-                className="flex flex-row h-min gap-x-2 w-11/12 mx-auto overflow-auto"
-              >
-                <span className="text-[0.7rem] mt-2">
+              <li key={acc.id} className="flex flex-row h-min gap-x-2">
+                <span
+                  className={cn(
+                    "text-sm",
+                    acc.supported_payment_method_types.includes(
+                      "us_bank_account"
+                    )
+                      ? ""
+                      : "opacity-50"
+                  )}
+                >
                   {acc.display_name} - {acc.last4}
                 </span>
+                {!acc.supported_payment_method_types.includes(
+                  "us_bank_account"
+                ) && (
+                  <span className="ml-1 text-sm text-destructive flex flex-row justify-center items-center">
+                    <AlertTriangleIcon className="w-2 h-2 mr-1" />
+                    Unsupported
+                  </span>
+                )}
               </li>
             ))}
           </div>
         </DialogHeader>
         <DialogFooter>
-          {accounts.length === 0 ? (
+          {supportedAccounts.length === 0 ? (
             <Button type="submit" className="w-full" onClick={onClose}>
               Close
             </Button>
