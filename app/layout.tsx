@@ -19,9 +19,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full transition-all" suppressHydrationWarning>
-      <body className={`${inter.className} h-full flex flex-col`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <body
+        className={`${inter.className} h-full flex flex-col !transition-[background-color] !duration-300`}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <main className="max-w-3xl mx-auto w-full flex-1">{children}</main>
           <Toaster />
         </ThemeProvider>

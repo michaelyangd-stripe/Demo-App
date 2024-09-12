@@ -16,7 +16,11 @@ const ThemeToggle = () => {
   if (!mounted) {
     return (
       // @ts-ignore
-      <Around id="unsure" toggled={false} className="text-2xl" />
+      <Around
+        id="unsure"
+        toggled={false}
+        className="text-2xl theme-toggle-component"
+      />
     );
   }
 
@@ -25,7 +29,7 @@ const ThemeToggle = () => {
     <Around
       toggled={resolvedTheme === "dark"}
       onToggle={(e) => setTheme(e ? "dark" : "light")}
-      className="text-2xl"
+      className="text-2xl theme-toggle-component"
     />
   );
 };

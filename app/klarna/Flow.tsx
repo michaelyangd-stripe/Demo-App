@@ -167,7 +167,7 @@ function Step({
           },
         }}
         transition={{ duration: 0.2 }}
-        className="text-[0.5rem]"
+        className="text-[0.5rem] font-semibold tracking-tight transition-colors"
       >
         {title}
       </motion.span>
@@ -175,12 +175,12 @@ function Step({
         initial={false}
         variants={{
           inactive: {
-            backgroundColor: "hsl(var(--background))",
+            backgroundColor: "transparent",
             borderColor: "hsl(var(--muted))",
             color: "hsl(var(--muted))",
           },
           active: {
-            backgroundColor: "hsl(var(--background))",
+            backgroundColor: "transparent",
             borderColor: "hsl(var(--primary))",
             color: "hsl(var(--primary))",
           },
@@ -191,7 +191,7 @@ function Step({
           },
         }}
         transition={{ duration: 0.2 }}
-        className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 font-semibold`}
+        className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 font-semibold transition-colors`}
       >
         <div className="flex items-center justify-center">
           {status === "complete" ? (

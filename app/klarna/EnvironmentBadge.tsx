@@ -19,23 +19,13 @@ export const LivemodeBadge = () => {
   );
 };
 
-const EnvironmentBadge = () => {
-  const { customer } = useApp();
-  if (!customer) {
-    return null;
-  }
-  return <SwappableBadge isTestmode={customer.testmode} />;
-};
-
 export const SwappableBadge = ({ isTestmode }: { isTestmode: boolean }) => (
   <Badge
     className={cn(
       isTestmode ? "bg-[#ff8f0e]" : "bg-[#0edfff]",
-      "cursor-default text-[0.625rem] px-1.5 py-[0.05rem] leading-normal"
+      "cursor-default text-[0.625rem] px-1.5 py-[0.05rem] leading-normal transition-colors"
     )}
   >
     {isTestmode ? "test" : "live"}
   </Badge>
 );
-
-export default EnvironmentBadge;

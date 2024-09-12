@@ -81,17 +81,21 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
       cell: ({ row }) => {
         return (
           <Button
-            disabled={row.original.id === customer?.id}
+            variant={row.original.id === customer?.id ? "outline" : "default"}
             onClick={() => {
-              saveCustomerData({
-                id: row.original.id,
-                email: row.original.email,
-                name: row.original.name,
-                testmode: row.original.testmode,
-                stateIds: {},
-              });
-              setCustomerId(row.original.id);
-              onNext();
+              if (row.original.id === customer?.id) {
+                onNext();
+              } else {
+                saveCustomerData({
+                  id: row.original.id,
+                  email: row.original.email,
+                  name: row.original.name,
+                  testmode: row.original.testmode,
+                  stateIds: {},
+                });
+                setCustomerId(row.original.id);
+                onNext();
+              }
             }}
           >
             {row.original.id === customer?.id ? "Selected" : "Select"}

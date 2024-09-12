@@ -10,18 +10,10 @@ export default function MainPage() {
     >
       <ThemeToggle />
       <h1 className="text-4xl font-bold">Hi.</h1>
-      <Link
-        href="/klarna"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-        passHref
-      >
+      <Link href="/klarna" className="text-sm font-medium" passHref>
         <Button>Klarna</Button>
       </Link>
-      <Link
-        href="/elements"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-        passHref
-      >
+      <Link href="/elements" className="text-sm font-medium" passHref>
         <Button>Elements</Button>
       </Link>
     </div>

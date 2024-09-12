@@ -45,7 +45,8 @@ export async function createCustomer(
 ) {
   return withAuth(password, isTestMode, async (stripe) => {
     try {
-      return await stripe.customers.create({ name, email });
+      const customer = await stripe.customers.create({ name, email });
+      return serializeData(customer);
     } catch (e) {
       let errorMessage = "An unknown error occurred";
       if (e instanceof Error) {

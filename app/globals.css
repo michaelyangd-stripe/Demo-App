@@ -74,3 +74,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* This selector needs to be more specific than the one used by disableTransitionOnChange */
+body [class*="theme-toggle-component"],
+body [class*="theme-toggle-component"] * {
+  transition: transform 500ms !important;
+  animation: transform 500ms !important;
+}
