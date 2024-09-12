@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { useApp } from "./contexts/AppContext";
+import { cn } from "@/lib/utils";
 
 export const TestmodeBadge = () => {
   return (
@@ -23,8 +24,18 @@ const EnvironmentBadge = () => {
   if (!customer) {
     return null;
   }
-
-  return customer.testmode ? <TestmodeBadge /> : <LivemodeBadge />;
+  return <SwappableBadge isTestmode={customer.testmode} />;
 };
+
+export const SwappableBadge = ({ isTestmode }: { isTestmode: boolean }) => (
+  <Badge
+    className={cn(
+      isTestmode ? "bg-[#ff8f0e]" : "bg-[#0edfff]",
+      "cursor-default text-[0.625rem] px-1.5 py-[0.05rem] leading-normal"
+    )}
+  >
+    {isTestmode ? "test" : "live"}
+  </Badge>
+);
 
 export default EnvironmentBadge;

@@ -18,7 +18,7 @@ import { useApp } from "../contexts/AppContext";
 import { saveCustomerData } from "@/app/klarna/localstorage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TypedTable from "../TypedTable";
-import { LivemodeBadge, TestmodeBadge } from "../EnvironmentBadge";
+import { SwappableBadge } from "../EnvironmentBadge";
 import IDSearchForm from "./IDSerachForm";
 import EmailSearchForm from "./EmailSearchForm";
 import NewCustomerForm from "./NewCustomerForm";
@@ -71,7 +71,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
       header: "Env",
       cell: ({ row }) => {
         if (typeof row.original.testmode == "boolean") {
-          return row.original.testmode ? <TestmodeBadge /> : <LivemodeBadge />;
+          return <SwappableBadge isTestmode={row.original.testmode} />;
         }
       },
     },

@@ -10,7 +10,7 @@ import { useApp } from "../contexts/AppContext";
 import { saveCustomerData } from "@/app/klarna/localstorage";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { LivemodeBadge, TestmodeBadge } from "../EnvironmentBadge";
+import { SwappableBadge } from "../EnvironmentBadge";
 
 export default function NewCustomerForm({ onNext }: { onNext: () => void }) {
   const { toast } = useToast();
@@ -89,7 +89,7 @@ export default function NewCustomerForm({ onNext }: { onNext: () => void }) {
   return (
     <Card>
       <div className="space-y-2 flex flex-col justify-center items-center min-h-[300px] my-4">
-        {testmode ? <TestmodeBadge /> : <LivemodeBadge />}
+        <SwappableBadge isTestmode={testmode} />
         <h2 className="text-xl font-extrabold tracking-tight">
           Create a New Customer
         </h2>

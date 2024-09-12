@@ -13,7 +13,7 @@ function SelectedCustomer() {
 
   if (!customer) {
     return (
-      <Badge className="bg-muted-foreground text-muted cursor-default">
+      <Badge className="bg-muted text-muted-foreground cursor-default">
         No Customer Selected
       </Badge>
     );

@@ -19,7 +19,7 @@ import { saveCustomerData } from "@/app/klarna/localstorage";
 import { Card } from "@/components/ui/card";
 import TypedTable from "../TypedTable";
 import { Switch } from "@/components/ui/switch";
-import { LivemodeBadge, TestmodeBadge } from "../EnvironmentBadge";
+import { SwappableBadge } from "../EnvironmentBadge";
 import { Badge } from "@/components/ui/badge";
 import { LinkIcon } from "lucide-react";
 
@@ -131,7 +131,7 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
       header: "Env",
       cell: ({ row }) => {
         if (typeof row.original.testmode == "boolean") {
-          return row.original.testmode ? <TestmodeBadge /> : <LivemodeBadge />;
+          return <SwappableBadge isTestmode={row.original.testmode} />;
         }
       },
     },
@@ -164,7 +164,7 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
     <div className="space-y-2">
       <Card>
         <div className="space-y-2 flex flex-col justify-center items-center min-h-[300px] my-4">
-          {testmode ? <TestmodeBadge /> : <LivemodeBadge />}
+          <SwappableBadge isTestmode={testmode} />
           <h2 className="text-xl font-extrabold tracking-tight">
             Serach by Email
           </h2>

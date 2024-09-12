@@ -3,6 +3,7 @@ import { AppProvider } from "./contexts/AppContext";
 import EnvironmentBadge from "./EnvironmentBadge";
 import Image from "next/image";
 import SelectedCustomer from "./SelectedCustomer";
+import ThemeToggle from "../ThemeToggle";
 Image;
 
 export const metadata: Metadata = {
@@ -21,11 +22,12 @@ const NavBar = () => (
         priority
       />
     </div>
-    <div className="flex-1 flex justify-center">
+    <div className="flex-1 justify-center flex flex-col gap-y-1 items-center">
       <EnvironmentBadge />
+      <SelectedCustomer />
     </div>
     <div className="flex-1 flex justify-end">
-      <SelectedCustomer />
+      <ThemeToggle />
     </div>
   </div>
 );
