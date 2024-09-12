@@ -179,7 +179,7 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
         <h1 className="text-4xl font-extrabold tracking-tight">
           Select a Stripe Customer
         </h1>
-        <p className="text-xl text-muted-foreground">
+        <p className="text-lg text-muted-foreground">
           {`Mimicking Klarna's sign-in flow`}
         </p>
       </div>

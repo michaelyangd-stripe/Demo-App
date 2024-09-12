@@ -195,7 +195,7 @@ export default function PaymentMethodList({
           <h1 className="text-4xl font-extrabold tracking-tight">
             Saved Payment Methods
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-lg text-muted-foreground">
             {`Mimicking Klarna's payment method settings page`}
           </p>
         </div>
