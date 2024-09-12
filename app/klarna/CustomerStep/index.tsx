@@ -22,6 +22,8 @@ import { LivemodeBadge, TestmodeBadge } from "../EnvironmentBadge";
 import IDSearchForm from "./IDSerachForm";
 import EmailSearchForm from "./EmailSearchForm";
 import NewCustomerForm from "./NewCustomerForm";
+import { Badge } from "@/components/ui/badge";
+import { LinkIcon } from "lucide-react";
 
 export default function CustomerLookup({ onNext }: { onNext: () => void }) {
   const { toast } = useToast();
@@ -41,6 +43,20 @@ export default function CustomerLookup({ onNext }: { onNext: () => void }) {
     {
       accessorKey: "id",
       header: "ID",
+      cell: ({ row }) => {
+        return (
+          <a
+            href={`https://go/o/${row.original.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Badge className="text-[0.625rem] px-1.5 py-[0.05rem] leading-normal">
+              <LinkIcon className="w-3 h-3 mr-1" />
+              {customer?.id}
+            </Badge>
+          </a>
+        );
+      },
     },
     {
       accessorKey: "name",

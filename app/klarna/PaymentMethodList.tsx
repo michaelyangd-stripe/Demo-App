@@ -45,7 +45,7 @@ const columns: ColumnDef<PaymentMethod>[] = [
         target="_blank"
         rel="noopener noreferrer"
       >
-        <Badge>
+        <Badge className="text-[0.625rem] px-1.5 py-[0.05rem] leading-normal">
           <LinkIcon className="w-3 h-3 mr-1" />
           {row.original.id}
         </Badge>

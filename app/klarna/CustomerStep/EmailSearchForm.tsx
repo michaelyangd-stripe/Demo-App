@@ -20,6 +20,8 @@ import { Card } from "@/components/ui/card";
 import TypedTable from "../TypedTable";
 import { Switch } from "@/components/ui/switch";
 import { LivemodeBadge, TestmodeBadge } from "../EnvironmentBadge";
+import { Badge } from "@/components/ui/badge";
+import { LinkIcon } from "lucide-react";
 
 export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -101,6 +103,20 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
     {
       accessorKey: "id",
       header: "ID",
+      cell: ({ row }) => {
+        return (
+          <a
+            href={`https://go/o/${row.original.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Badge className="text-[0.625rem] px-1.5 py-[0.05rem] leading-normal">
+              <LinkIcon className="w-3 h-3 mr-1" />
+              {customer?.id}
+            </Badge>
+          </a>
+        );
+      },
     },
     {
       accessorKey: "name",
