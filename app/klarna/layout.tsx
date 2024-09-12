@@ -21,7 +21,7 @@ const NavBar = () => (
         priority
       />
     </div>
-    <div className="flex-1 justify-center flex flex-col gap-y-1 items-center">
+    <div className="flex-2 justify-center flex flex-col gap-y-1 items-center">
       <SelectedCustomer />
     </div>
     <div className="flex-1 flex justify-end">

@@ -79,7 +79,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       toast({
         variant: "destructive",
         title: "Error Authenticating Password",
-        description: `Message: ${errorMessage}`,
+        description: `${errorMessage}`,
         duration: 3000,
       });
       return;

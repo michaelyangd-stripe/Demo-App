@@ -4,55 +4,80 @@ import { useApp } from "../contexts/AppContext";
 import * as serverActions from "../actions";
 import { useMemo } from "react";
 
+type ServerActions = typeof serverActions;
+
+type ActionParams<T extends keyof ServerActions> = Parameters<
+  ServerActions[T]
+>[0];
+
+type OmitCommon<T> = Omit<T, "password" | "isTestMode">;
+
 export function useActions() {
   const { password, customer } = useApp();
 
   return useMemo(
     () => ({
-      createCustomer: (name: string, email: string, isTestMode: boolean) =>
-        serverActions.createCustomer(name, email, password, isTestMode),
+      createCustomer: (
+        params: OmitCommon<ActionParams<"createCustomer">> & {
+          isTestMode: boolean;
+        }
+      ) => serverActions.createCustomer({ ...params, password }),
 
-      fetchCustomers: (email: string, isTestMode: boolean) =>
-        serverActions.fetchCustomers(email, password, isTestMode),
+      fetchCustomers: (
+        params: OmitCommon<ActionParams<"fetchCustomers">> & {
+          isTestMode: boolean;
+        }
+      ) => serverActions.fetchCustomers({ ...params, password }),
 
-      fetchCustomer: (customerId: string, isTestMode: boolean) =>
-        serverActions.fetchCustomer(customerId, password, isTestMode),
+      fetchCustomer: (
+        params: OmitCommon<ActionParams<"fetchCustomer">> & {
+          isTestMode: boolean;
+        }
+      ) => serverActions.fetchCustomer({ ...params, password }),
 
       getPaymentMethods: () =>
-        serverActions.getPaymentMethods(
-          customer!.id,
+        serverActions.getPaymentMethods({
+          customerId: customer!.id,
           password,
-          customer!.testmode
-        ),
+          isTestMode: customer!.testmode,
+        }),
 
       createFinancialConnectionsSession: (
-        institutionId: string,
-        stateId: string
+        params: Omit<
+          OmitCommon<ActionParams<"createFinancialConnectionsSession">>,
+          "customerId"
+        >
       ) =>
-        serverActions.createFinancialConnectionsSession(
-          customer!.id,
-          institutionId,
-          stateId,
+        serverActions.createFinancialConnectionsSession({
+          ...params,
+          customerId: customer!.id,
           password,
-          customer!.testmode
-        ),
+          isTestMode: customer!.testmode,
+        }),
 
-      getFinancialConnectionsSession: (sessionId: string) =>
-        serverActions.getFinancialConnectionsSession(
-          sessionId,
+      getFinancialConnectionsSession: (
+        params: OmitCommon<ActionParams<"getFinancialConnectionsSession">>
+      ) =>
+        serverActions.getFinancialConnectionsSession({
+          ...params,
           password,
-          customer!.testmode
-        ),
+          isTestMode: customer!.testmode,
+        }),
 
-      createPaymentMethodsFromAccounts: (accountIds: string[]) =>
-        serverActions.createPaymentMethodsFromAccounts(
-          accountIds,
-          customer!.name,
-          customer!.id,
+      createPaymentMethodsFromAccounts: (
+        params: Omit<
+          OmitCommon<ActionParams<"createPaymentMethodsFromAccounts">>,
+          "customerId" | "customerName"
+        >
+      ) =>
+        serverActions.createPaymentMethodsFromAccounts({
+          ...params,
+          customerId: customer!.id,
+          customerName: customer!.name || undefined,
           password,
-          customer!.testmode
-        ),
+          isTestMode: customer!.testmode,
+        }),
     }),
-    [customer?.id, password]
+    [customer, password]
   );
 }

@@ -42,29 +42,20 @@ export default function NewCustomerForm({ onNext }: { onNext: () => void }) {
         return false;
       });
 
-      if (!customerEmail.value || !customerName.value) {
-        toast({
-          variant: "destructive",
-          title: "Invalid Customer Details",
-          description: "Customer details must be filled out.",
-          duration: 3000,
-        });
-        setCreateLoading(false);
-        return;
-      }
-      const customer = await actions.createCustomer(
-        customerName.value,
-        customerEmail.value,
-        testmode
-      );
+      const customer = await actions.createCustomer({
+        name: customerName.value || undefined,
+        email: customerEmail.value || undefined,
+        isTestMode: testmode,
+      });
+
       if (!customer) {
         setCreateLoading(false);
         throw new Error("No customer returned from createCustomer.");
       }
       saveCustomerData({
         id: customer.id,
-        email: customer.email || "",
-        name: customer.name || "",
+        email: customer.email,
+        name: customer.name,
         testmode: !customer.livemode,
         stateIds: {},
       });
@@ -84,7 +75,7 @@ export default function NewCustomerForm({ onNext }: { onNext: () => void }) {
       toast({
         variant: "destructive",
         title: "Error Creating New Customer",
-        description: `Message: ${errorMessage}`,
+        description: `${errorMessage}`,
         duration: 3000,
       });
       setCreateLoading(false);
@@ -93,7 +84,7 @@ export default function NewCustomerForm({ onNext }: { onNext: () => void }) {
   };
 
   return (
-    <Card>
+    <Card className="bg-transparent">
       <div className="space-y-2 flex flex-col justify-center items-center min-h-[300px] my-4">
         <SwappableBadge isTestmode={testmode} />
         <h2 className="text-xl font-extrabold tracking-tight">

@@ -50,7 +50,10 @@ export default function IDSearchForm({ onNext }: { onNext: () => void }) {
     }
 
     try {
-      const customer = await actions.fetchCustomer(customerId.value, testmode);
+      const customer = await actions.fetchCustomer({
+        customerId: customerId.value,
+        isTestMode: testmode,
+      });
       if (!customer) {
         toast({
           variant: "destructive",
@@ -75,8 +78,8 @@ export default function IDSearchForm({ onNext }: { onNext: () => void }) {
 
       saveCustomerData({
         id: customer.id,
-        email: customer.email || "",
-        name: customer.name || "",
+        email: customer.email,
+        name: customer.name,
         testmode: !customer.livemode,
         stateIds: {},
       });
@@ -97,17 +100,17 @@ export default function IDSearchForm({ onNext }: { onNext: () => void }) {
   };
 
   return (
-    <Card>
+    <Card className="bg-transparent">
       <div className="space-y-2 flex flex-col justify-center items-center min-h-[300px] my-4">
         <SwappableBadge isTestmode={testmode} />
         <h2 className="text-xl font-extrabold tracking-tight">
-          Serach by Customer ID
+          Search by Customer ID
         </h2>
         <form
           className="mb-4 flex flex-col gap-x-6 space-y-2 w-full max-w-[300px]"
           onSubmit={handleManualSubmit}
         >
-          <Input type="text" name="customerId" placeholder="cus_" />
+          <Input type="text" name="customerId" placeholder="cus_xyz" />
           <div className="flex flex-row pt-1 pb-2 items-center self-end">
             <label className="text-sm pr-2" htmlFor="testmode">
               Testmode

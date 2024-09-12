@@ -101,9 +101,9 @@ export default function PaymentMethodList({
     }
 
     try {
-      const session = await actions.getFinancialConnectionsSession(
-        stateInfo.stateData.fcId
-      );
+      const session = await actions.getFinancialConnectionsSession({
+        sessionId: stateInfo.stateData.fcId,
+      });
       if (session && session.accounts && session.accounts.data) {
         setAccounts(session.accounts.data);
         setOpenBankDialog(false);
@@ -170,7 +170,7 @@ export default function PaymentMethodList({
       toast({
         variant: "destructive",
         title: "Error Creating New Session",
-        description: `Message: ${errorMessage}`,
+        description: `${errorMessage}`,
         duration: 3000,
       });
       setIsPaymentMethodLoading(false);
@@ -190,7 +190,7 @@ export default function PaymentMethodList({
 
   return (
     <div className="mb-6 space-y-4">
-      <div className="flex flex-row justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr,auto] justify-between gap-2">
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight">
             Saved Payment Methods

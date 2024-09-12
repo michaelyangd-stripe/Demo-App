@@ -112,10 +112,10 @@ export function BankDialog({
     setIsLoading(true);
     try {
       const stateId = generateStateId(customer.id);
-      const session = await actions.createFinancialConnectionsSession(
+      const session = await actions.createFinancialConnectionsSession({
         institutionId,
-        stateId
-      );
+        stateId,
+      });
 
       if (!session) {
         throw new Error(
@@ -152,7 +152,7 @@ export function BankDialog({
       toast({
         variant: "destructive",
         title: "Error Creating New Session",
-        description: `Message: ${errorMessage}`,
+        description: `${errorMessage}`,
         duration: 3000,
       });
       setIsLoading(false);

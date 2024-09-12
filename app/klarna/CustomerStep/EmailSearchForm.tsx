@@ -5,14 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useActions } from "../hooks/useActions";
 import { ColumnDef } from "@tanstack/react-table";
-
-type Customer = {
-  id: string;
-  email: string;
-  name: string;
-  testmode: boolean;
-};
-
+import { type CustomerTableDataShape } from ".";
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "../contexts/AppContext";
 import { saveCustomerData } from "@/app/klarna/localstorage";
@@ -22,9 +15,11 @@ import { Switch } from "@/components/ui/switch";
 import { SwappableBadge } from "../EnvironmentBadge";
 import { Badge } from "@/components/ui/badge";
 import { LinkIcon } from "lucide-react";
+import { NotAvailableBadge } from ".";
+import { CustomerBadge } from "../SelectedCustomer";
 
 export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
-  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [customers, setCustomers] = useState<CustomerTableDataShape[]>([]);
   const [emailSearchLoading, setEmailSearchLoading] = useState(false);
   const [testmode, setTestmode] = useState(false);
   const { toast } = useToast();
@@ -61,10 +56,10 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
       return;
     }
     try {
-      const response = await actions.fetchCustomers(
-        customerEmail.value,
-        testmode
-      );
+      const response = await actions.fetchCustomers({
+        email: customerEmail.value,
+        isTestMode: testmode,
+      });
       if (response && response.data) {
         if (response.data.length === 0) {
           toast({
@@ -79,8 +74,8 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
         setCustomers(
           response.data.map((customer) => ({
             id: customer.id,
-            email: customer.email || "",
-            name: customer.name || "",
+            email: customer.email,
+            name: customer.name,
             testmode: !customer.livemode,
           }))
         );
@@ -99,40 +94,35 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
     }
   };
 
-  const columns: ColumnDef<Customer>[] = [
+  const columns: ColumnDef<CustomerTableDataShape>[] = [
     {
       accessorKey: "id",
       header: "ID",
-      cell: ({ row }) => {
-        return (
-          <a
-            href={`https://go/o/${row.original.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Badge className="text-[0.625rem] px-1.5 py-[0.05rem] leading-normal">
-              <LinkIcon className="w-3 h-3 mr-1" />
-              {customer?.id}
-            </Badge>
-          </a>
-        );
-      },
+      cell: ({ row }) => (
+        <div className="flex flex-row gap-x-1 items-center">
+          <SwappableBadge isTestmode={row.original.testmode} />
+          <CustomerBadge customerId={row.original.id} />
+        </div>
+      ),
     },
     {
       accessorKey: "name",
       header: "Name",
+      cell: ({ row }) => {
+        if (typeof row.original.name === "string") {
+          return row.original.name;
+        }
+        return <NotAvailableBadge />;
+      },
     },
     {
       accessorKey: "email",
       header: "Email",
-    },
-    {
-      accessorKey: "testmode",
-      header: "Env",
       cell: ({ row }) => {
-        if (typeof row.original.testmode == "boolean") {
-          return <SwappableBadge isTestmode={row.original.testmode} />;
+        if (typeof row.original.email === "string") {
+          return row.original.email;
         }
+        return <NotAvailableBadge />;
       },
     },
     {
@@ -166,17 +156,17 @@ export default function EmailSearchForm({ onNext }: { onNext: () => void }) {
 
   return (
     <div className="space-y-2">
-      <Card>
+      <Card className="bg-transparent">
         <div className="space-y-2 flex flex-col justify-center items-center min-h-[300px] my-4">
           <SwappableBadge isTestmode={testmode} />
           <h2 className="text-xl font-extrabold tracking-tight">
-            Serach by Email
+            Search by Email
           </h2>
           <form
             onSubmit={onEmailSearch}
             className="mb-4 flex flex-col gap-x-6 space-y-2 w-full max-w-[300px]"
           >
-            <Input type="email" name="customerEmail" placeholder="email" />
+            <Input type="email" name="customerEmail" placeholder="Email" />
             <div className="flex flex-row pt-1 pb-2 items-center self-end">
               <label className="text-sm pr-2" htmlFor="testmode">
                 Testmode

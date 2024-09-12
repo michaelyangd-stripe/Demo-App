@@ -8,7 +8,6 @@ const config = {
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
-  safelist: ["delay-[5000ms]"],
   prefix: "",
   theme: {
     container: {

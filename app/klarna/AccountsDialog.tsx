@@ -54,9 +54,9 @@ export function AccountsDialog({
       const supportedAccountIds = supportedAccounts.map(
         (account) => account.id
       );
-      const session = await actions.createPaymentMethodsFromAccounts(
-        supportedAccountIds
-      );
+      const session = await actions.createPaymentMethodsFromAccounts({
+        accountIds: supportedAccountIds,
+      });
 
       if (!session) {
         throw new Error(
@@ -79,7 +79,7 @@ export function AccountsDialog({
       toast({
         variant: "destructive",
         title: "Error Saving PaymentMethod",
-        description: `Message: ${errorMessage}`,
+        description: `${errorMessage}`,
         duration: 3000,
       });
       setIsLoading(false);

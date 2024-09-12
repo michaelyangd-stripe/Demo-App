@@ -8,8 +8,8 @@ interface StateData {
 
 export interface CustomerData {
   id: string;
-  email: string;
-  name: string;
+  email?: string | null;
+  name?: string | null;
   testmode: boolean;
   stateIds: {
     [stateId: string]: StateData;

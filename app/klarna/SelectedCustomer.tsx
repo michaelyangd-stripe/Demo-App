@@ -6,6 +6,22 @@ import { Badge } from "@/components/ui/badge";
 import { LinkIcon } from "lucide-react";
 import { SwappableBadge } from "./EnvironmentBadge";
 
+export const CustomerBadge = ({ customerId }: { customerId: string }) => {
+  return (
+    <a
+      className="flex"
+      href={`https://go/o/${customerId}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <Badge className="text-[0.625rem] px-1.5 py-[0.05rem] leading-normal bg-green-600 dark:bg-green-400 hover:bg-green-400 dark:hover:bg-green-200 transition-colors">
+        <LinkIcon className="w-2 h-2 mr-1" />
+        {customerId}
+      </Badge>
+    </a>
+  );
+};
+
 function SelectedCustomer() {
   const { isAuthenticated, customer } = useApp();
   if (!isAuthenticated) {
@@ -21,18 +37,9 @@ function SelectedCustomer() {
   }
 
   return (
-    <div className="flex-1 justify-center flex flex-col gap-y-1 items-center">
+    <div className="flex flex-row gap-x-1 items-center justify-center">
       <SwappableBadge isTestmode={customer.testmode} />
-      <a
-        href={`https://go/o/${customer?.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Badge className="text-[0.625rem] px-1.5 py-[0.05rem] leading-normal">
-          <LinkIcon className="w-3 h-3 mr-1" />
-          {customer?.id}
-        </Badge>
-      </a>
+      <CustomerBadge customerId={customer.id} />
     </div>
   );
 }
