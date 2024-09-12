@@ -41,6 +41,7 @@ export function BankDialog({
   const [dialogStep, setDialogStep] = useState(1);
   const [consentChecked, setConsentChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [url, setUrl] = useState<string | null>(null);
   const { toast } = useToast();
   const { customer } = useApp();
   const institutions = customer!.testmode ? testInstitutions : liveInstitutions;
@@ -134,6 +135,7 @@ export function BankDialog({
         );
       }
       window.open(url, "_blank");
+      setUrl(url);
       setIsLoading(false);
       setStateIdToPoll(stateId);
       setDialogStep(3);
@@ -188,7 +190,7 @@ export function BankDialog({
     >
       <DialogContent className="pt-12 px-10">
         <DialogHeader className="min-h-96">
-          <DialogTitle className="text-2xl tracking-tight">
+          <DialogTitle className="text-2xl tracking-tight text-center">
             {(() => {
               if (dialogStep === 1) {
                 return "Link your bank account";
@@ -248,10 +250,23 @@ export function BankDialog({
               );
             }
             if (dialogStep === 3) {
-              return (
+              return !url ? (
+                <DialogDescription className="flex flex-col gap-2 justify-center items-center py-6">
+                  Something went wrong with url generation
+                </DialogDescription>
+              ) : (
                 <DialogDescription className="flex flex-col gap-2 justify-center items-center py-6">
                   StateId: {stateIdToPoll}
                   <LoaderIcon className="animate-spin" />
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs text-muted-foreground mt-4">
+                      If a window didn't open automatically,{" "}
+                      <a href={url} target="_blank" className="underline">
+                        try opening it again
+                      </a>
+                      .
+                    </p>
+                  </div>
                 </DialogDescription>
               );
             }
