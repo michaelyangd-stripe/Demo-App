@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full transition-all" suppressHydrationWarning>
       <body className={`${inter.className} h-full flex flex-col`}>
-        <ThemeProvider attribute="class">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <main className="max-w-3xl mx-auto w-full flex-1">{children}</main>
           <Toaster />
         </ThemeProvider>

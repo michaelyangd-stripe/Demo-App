@@ -6,7 +6,7 @@ import { Around } from "@theme-toggles/react";
 
 const ThemeToggle = () => {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   // useEffect only runs on the client, so now we can safely show the UI
   useEffect(() => {
@@ -23,7 +23,7 @@ const ThemeToggle = () => {
   return (
     // @ts-ignore
     <Around
-      toggled={theme === "dark"}
+      toggled={resolvedTheme === "dark"}
       onToggle={(e) => setTheme(e ? "dark" : "light")}
       className="text-2xl"
     />
