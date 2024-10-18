@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  ConfigFormDataSchema,
-  useConfigFormContext,
-  ConfigFormData,
-} from "./hooks/useConfigForm";
-import { z } from "zod";
+import { useConfigFormContext, ConfigFormData } from "./hooks/useConfigForm";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,20 +10,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useAppContext } from "./hooks/useAppContext";
 import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Toggle } from "@/components/ui/toggle";
 
 export function ElementsForm({
   onSubmit,
@@ -42,77 +30,71 @@ export function ElementsForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col overflow-auto mt-2 h-full"
       >
+        <div className="flex flex-row overflow-auto py-6 px-2 w-full items-center justify-between">
+          <FormField
+            control={form.control}
+            name="mode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Intent</FormLabel>
+                <FormControl>
+                  <ToggleGroup
+                    type="single"
+                    className="justify-start"
+                    size="lg"
+                    value={field.value}
+                    onValueChange={(value) => {
+                      if (value) field.onChange(value);
+                    }}
+                  >
+                    <ToggleGroupItem value="payment">Payment</ToggleGroupItem>
+                    <ToggleGroupItem value="setup">Setup</ToggleGroupItem>
+                  </ToggleGroup>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <div className="flex flex-row gap-x-6">
+            <FormField
+              control={form.control}
+              name="isDeferredIntent"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-y-1 items-center">
+                  <FormLabel>Deferred</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="livemode"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-y-1 items-center">
+                  <FormLabel>Livemode</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
         <Tabs defaultValue="server" className="flex-1">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="server">Server</TabsTrigger>
             <TabsTrigger value="client">Client</TabsTrigger>
           </TabsList>
           <TabsContent value="server">
-            <Card>
-              <CardHeader>
-                <CardTitle>Server</CardTitle>
-                <CardDescription>
-                  Variables used on the server-side
-                </CardDescription>
-              </CardHeader>
+            <Card className="py-4">
               <CardContent className="flex flex-col gap-y-6 h-full overflow-auto">
-                <FormField
-                  control={form.control}
-                  name="livemode"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-y-1">
-                      <FormLabel>Livemode</FormLabel>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="intentType"
-                  render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel>Intent Type</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="flex flex-col space-y-1"
-                        >
-                          <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="payment_intent" />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              PaymentIntent
-                            </FormLabel>
-                          </FormItem>
-                          <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="setup_intent" />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              Setup Intent
-                            </FormLabel>
-                          </FormItem>
-                          <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="deferred_intent" />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              Deferred Intent (payment)
-                            </FormLabel>
-                          </FormItem>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <FormField
                   control={form.control}
                   name="createCustomer"
@@ -120,9 +102,7 @@ export function ElementsForm({
                     <FormItem className="flex flex-col gap-y-1">
                       <FormLabel
                         className={
-                          form.getValues("intentType") === "deferred_intent"
-                            ? "opacity-20"
-                            : ""
+                          form.getValues("isDeferredIntent") ? "opacity-20" : ""
                         }
                       >
                         Create Customer on Intent
@@ -131,9 +111,7 @@ export function ElementsForm({
                         <Switch
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          disabled={
-                            form.getValues("intentType") === "deferred_intent"
-                          }
+                          disabled={form.getValues("isDeferredIntent")}
                         />
                       </FormControl>
                     </FormItem>
@@ -146,7 +124,7 @@ export function ElementsForm({
                     <FormItem>
                       <FormLabel
                         className={
-                          form.getValues("intentType") === "deferred_intent" ||
+                          form.getValues("mode").startsWith("deferred_") ||
                           !form.getValues("createCustomer")
                             ? "opacity-20"
                             : ""
@@ -159,8 +137,7 @@ export function ElementsForm({
                           placeholder="michaelyangd+123@stripe.com"
                           {...field}
                           disabled={
-                            form.getValues("intentType") ===
-                              "deferred_intent" ||
+                            form.getValues("isDeferredIntent") ||
                             !form.getValues("createCustomer")
                           }
                         />
@@ -201,13 +178,7 @@ export function ElementsForm({
             </Card>
           </TabsContent>
           <TabsContent value="client">
-            <Card>
-              <CardHeader>
-                <CardTitle>Client</CardTitle>
-                <CardDescription>
-                  Variables used on the client-side
-                </CardDescription>
-              </CardHeader>
+            <Card className="py-4">
               <CardContent className="flex flex-col gap-y-6 h-96">
                 <FormField
                   control={form.control}

@@ -67,7 +67,7 @@ export default function CheckoutForm() {
     }
 
     let clientSecret = null;
-    if (configFormData?.intentType === "deferred_intent") {
+    if (configFormData?.intentType.startsWith("deferred_")) {
       const res = await fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -87,7 +87,7 @@ export default function CheckoutForm() {
           })
         : await stripe.confirmPayment({
             elements,
-            ...(configFormData?.intentType === "deferred_intent" && {
+            ...(configFormData?.intentType.startsWith("deferred_") && {
               clientSecret,
             }),
             confirmParams: {
@@ -116,6 +116,10 @@ export default function CheckoutForm() {
           email: configFormData?.billingEmail,
         }),
       },
+    },
+    // @ts-ignore
+    financialConnections: {
+      onEvent: (event: any) => console.log("Event Received: ", event),
     },
   };
 

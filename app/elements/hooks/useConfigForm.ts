@@ -6,9 +6,10 @@ import { z } from "zod";
 
 export const ConfigFormDataSchema = z.object({
   elementTypes: z.enum(["linkAuthentication", "address", "payment"]).array(),
-  intentType: z.enum(["payment_intent", "setup_intent", "deferred_intent"], {
-    required_error: "You need to select a integration type.",
+  mode: z.enum(["payment", "setup"], {
+    required_error: "You need to select an integration type.",
   }),
+  isDeferredIntent: z.boolean(),
   createCustomer: z.boolean(),
   customerEmail: z.string().email().optional().or(z.literal("")),
   billingEmail: z.string().email().optional().or(z.literal("")),
@@ -25,7 +26,8 @@ export function useConfigForm() {
     resolver: zodResolver(ConfigFormDataSchema),
     defaultValues: {
       elementTypes: ["payment"],
-      intentType: "payment_intent",
+      mode: "payment",
+      isDeferredIntent: false,
       createCustomer: true,
       customerEmail: "michaelyangd+123@stripe.com",
       billingEmail: "michaelyangd+123@stripe.com",
