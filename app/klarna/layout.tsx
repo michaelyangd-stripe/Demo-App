@@ -3,6 +3,7 @@ import { AppProvider } from "./contexts/AppContext";
 import Image from "next/image";
 import SelectedCustomer from "./SelectedCustomer";
 import ThemeToggle from "../ThemeToggle";
+import Link from "next/link";
 Image;
 
 export const metadata: Metadata = {
@@ -13,13 +14,15 @@ export const metadata: Metadata = {
 const NavBar = () => (
   <div className="flex flex-row w-full justify-between items-center px-4 2xl:px-0 my-4 h-12">
     <div className="flex-1 flex justify-start">
-      <Image
-        src="/klarna_logo.svg"
-        width={25}
-        height={25}
-        alt="Klarna Logo"
-        priority
-      />
+      <Link href={"/"}>
+        <Image
+          src="/klarna_logo.svg"
+          width={25}
+          height={25}
+          alt="Klarna Logo"
+          priority
+        />
+      </Link>
     </div>
     <div className="flex-2 justify-center flex flex-col gap-y-1 items-center">
       <SelectedCustomer />

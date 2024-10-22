@@ -67,7 +67,7 @@ export default function CheckoutForm() {
     }
 
     let clientSecret = null;
-    if (configFormData?.intentType.startsWith("deferred_")) {
+    if (configFormData?.isDeferredIntent) {
       const res = await fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -78,16 +78,19 @@ export default function CheckoutForm() {
     }
 
     const { error } =
-      configFormData?.intentType === "setup_intent"
+      configFormData?.mode === "setup"
         ? await stripe.confirmSetup({
             elements,
+            ...(configFormData?.isDeferredIntent && {
+              clientSecret,
+            }),
             confirmParams: {
               return_url: `${baseUrl}/elements/success`,
             },
           })
         : await stripe.confirmPayment({
             elements,
-            ...(configFormData?.intentType.startsWith("deferred_") && {
+            ...(configFormData?.isDeferredIntent && {
               clientSecret,
             }),
             confirmParams: {
@@ -126,7 +129,6 @@ export default function CheckoutForm() {
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" options={paymentElementOptions} />
-
       {/* Show any error or success messages */}
       {message && <div id="payment-message">{message}</div>}
       <button

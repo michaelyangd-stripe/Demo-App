@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
       })
     : undefined;
 
+  const returnUrl = data.returnUrl;
   // EXAMPLE REQUEST FROM RARE
   // {
   //   customer: "cus_PzZzrjzVY2doyT",
@@ -38,6 +39,7 @@ export async function POST(request: NextRequest) {
   // }
   const setupIntent = await stripe.setupIntents.create(
     {
+      ...(returnUrl && { return_url: returnUrl }),
       ...(customer && { customer: customer.id }),
       // payment_method_options: {
       //   us_bank_account: {

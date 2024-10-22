@@ -25,7 +25,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className={`${inter.className} h-full flex flex-col !transition-[background-color] !duration-300`}
+        className={`${inter.className} h-full flex flex-col !transition-[background-color] !duration-300 bg-background`}
       >
         <ThemeProvider
           attribute="class"
@@ -33,15 +33,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="max-w-3xl mx-auto w-full flex-1">
-            <div
-              data-vaul-drawer-wrapper=""
-              className="bg-background min-h-[100%]"
-            >
-              {children}
-            </div>
+          <main
+            className="max-w-3xl mx-auto w-full flex-1"
+            data-vaul-drawer-wrapper=""
+          >
+            {children}
           </main>
-
           <Toaster />
         </ThemeProvider>
       </body>

@@ -152,6 +152,7 @@ export default function App() {
           customerEmail: configFormData.customerEmail,
           paymentMethodTypes: configFormData.paymentMethodTypes,
           livemode: configFormData.livemode,
+          returnUrl: configFormData.returnUrl,
         }),
       });
       const { id, clientSecret } = await res.json();
@@ -182,6 +183,16 @@ export default function App() {
         currency: "usd",
         appearance,
         paymentMethodTypes: configFormData.paymentMethodTypes,
+        paymentMethodOptions: {
+          us_bank_account: {
+            // @ts-ignore
+            financial_connections: {
+              ...(configFormData.returnUrl && {
+                return_url: configFormData.returnUrl,
+              }),
+            },
+          },
+        },
       };
     } else {
       if (clientSecret) {

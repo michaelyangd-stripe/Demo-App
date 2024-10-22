@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
         name: "alberto",
       })
     : undefined;
-
+  const returnUrl = data.returnUrl;
   // console.time("pi");
   // Create a PaymentIntent with the order amount and currency
   const paymentIntent = await stripe.paymentIntents.create(
@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
           },
         },
       },
+      ...(returnUrl && { return_url: returnUrl }),
       // payment_method_data: {
       //   type: "us_bank_account",
       //   billing_details: {
