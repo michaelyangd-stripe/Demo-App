@@ -274,7 +274,7 @@ export function BankDialog({
             }
           })()}
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="p-2">
           {(() => {
             if (dialogStep === 1) {
               return (
