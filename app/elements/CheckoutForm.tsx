@@ -68,10 +68,21 @@ export default function CheckoutForm() {
 
     let clientSecret = null;
     if (configFormData?.isDeferredIntent) {
-      const res = await fetch("/api/create-payment-intent", {
+      const endpoint =
+        configFormData.mode === "payment"
+          ? "/api/create-payment-intent"
+          : "/api/create-setup-intent";
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: [{ id: "xl-tshirt", amount: 1000 }] }),
+        body: JSON.stringify({
+          items: [{ id: "xl-tshirt", amount: 1000 }],
+          createCustomer: configFormData.createCustomer,
+          customerEmail: configFormData.customerEmail,
+          paymentMethodTypes: configFormData.paymentMethodTypes,
+          livemode: configFormData.livemode,
+          returnUrl: configFormData.returnUrl,
+        }),
       });
       const parsedResult = await res.json();
       clientSecret = parsedResult.clientSecret;
