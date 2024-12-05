@@ -50,15 +50,15 @@ import PaymentRequest from "./PaymentRequestForm";
 // recreating the Stripe object on every render.
 // This is your test publishable API key.
 const stripePromiseLivemode = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_LIVE_PUBLISHABLE_KEY!,
+  process.env.NEXT_PUBLIC_STRIPE_LIVE_PUBLISHABLE_KEY!
   // { betas: ["financial_connections_on_event_beta_1"] }
-  { stripeAccount: "acct_1NRIYOBOLg168MLu" }
+  // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
 );
 
 const stripePromiseTestmode = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_TEST_PUBLISHABLE_KEY!,
+  process.env.NEXT_PUBLIC_STRIPE_TEST_PUBLISHABLE_KEY!
   // { betas: ["financial_connections_on_event_beta_1"] }
-  { stripeAccount: "acct_1NRIYOBOLg168MLu" }
+  // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
 );
 const DrawerDialog = ({
   onSubmit,
