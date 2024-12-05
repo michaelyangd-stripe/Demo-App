@@ -8,6 +8,7 @@ import {
 } from "@stripe/stripe-js";
 import {
   AddressElement,
+  CardElement,
   Elements,
   LinkAuthenticationElement,
 } from "@stripe/react-stripe-js";
@@ -43,21 +44,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import PaymentRequest from "./PaymentRequestForm";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
 // This is your test publishable API key.
 const stripePromiseLivemode = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_LIVE_PUBLISHABLE_KEY!,
-  { betas: ["financial_connections_on_event_beta_1"] }
-  // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
+  // { betas: ["financial_connections_on_event_beta_1"] }
+  { stripeAccount: "acct_1NRIYOBOLg168MLu" }
 );
 
 const stripePromiseTestmode = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_TEST_PUBLISHABLE_KEY!,
-  { betas: ["financial_connections_on_event_beta_1"] }
-
-  // { stripeAccount: "acct_1NRIYOBOLg168MLu" }
+  // { betas: ["financial_connections_on_event_beta_1"] }
+  { stripeAccount: "acct_1NRIYOBOLg168MLu" }
 );
 const DrawerDialog = ({
   onSubmit,
@@ -303,6 +304,24 @@ export default function App() {
                       Payment Element
                     </h2>
                     <CheckoutForm />
+                  </div>
+                )}
+                {configFormData?.elementTypes.includes("paymentRequest") && (
+                  <div className="rounded-lg bg-[#25222c] px-4 py-5">
+                    <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
+                      Payment Request
+                    </h2>
+                    <PaymentRequest />
+                  </div>
+                )}
+                {configFormData?.elementTypes.includes("card") && (
+                  <div className="rounded-lg bg-[#25222c] px-4 py-5">
+                    <h2 className="mb-2 text-16 font-bold text-[#dee6e8]">
+                      Payment Request
+                    </h2>
+                    <CardElement
+                      options={{ style: { base: { color: "#fff" } } }}
+                    />
                   </div>
                 )}
               </Elements>

@@ -205,6 +205,10 @@ export function ElementsForm({
                       </ToggleGroupItem>
                       <ToggleGroupItem value="address">Address</ToggleGroupItem>
                       <ToggleGroupItem value="payment">Payment</ToggleGroupItem>
+                      <ToggleGroupItem value="paymentRequest">
+                        Payment Request
+                      </ToggleGroupItem>
+                      <ToggleGroupItem value="card">Card</ToggleGroupItem>
                     </ToggleGroup>
                   </FormControl>
                 </FormItem>

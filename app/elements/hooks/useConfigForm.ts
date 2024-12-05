@@ -5,7 +5,15 @@ import { useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 export const ConfigFormDataSchema = z.object({
-  elementTypes: z.enum(["linkAuthentication", "address", "payment"]).array(),
+  elementTypes: z
+    .enum([
+      "linkAuthentication",
+      "address",
+      "payment",
+      "paymentRequest",
+      "card",
+    ])
+    .array(),
   mode: z.enum(["payment", "setup"], {
     required_error: "You need to select an integration type.",
   }),
