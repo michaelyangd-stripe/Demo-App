@@ -37,7 +37,7 @@ export function useConfigForm() {
       elementTypes: ["payment"],
       mode: "payment",
       isDeferredIntent: false,
-      createCustomer: true,
+      createCustomer: false,
       customerEmail: "michaelyangd+123@stripe.com",
       billingEmail: "michaelyangd+123@stripe.com",
       billingName: undefined,
