@@ -43,5 +43,5 @@ export default function PaymentRequestForm() {
     return <PaymentRequestButtonElement options={{ paymentRequest }} />;
   }
 
-  return null;
+  return <div className="text-red-500">Payment Request cannot be used.</div>;
 }
