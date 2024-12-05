@@ -11,12 +11,14 @@ import {
 import { StripePaymentElementOptions, PaymentRequest } from "@stripe/stripe-js";
 import { useAppContext } from "./hooks/useAppContext";
 import { getBaseUrl } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 
 export default function PaymentRequestForm() {
   const stripe = useStripe();
   const [paymentRequest, setPaymentRequest] = useState<PaymentRequest | null>(
     null
   );
+  const [amount, setAmount] = useState(1099);
 
   useEffect(() => {
     if (stripe) {
@@ -25,7 +27,7 @@ export default function PaymentRequestForm() {
         currency: "usd",
         total: {
           label: "Demo total",
-          amount: 1099,
+          amount: amount,
         },
       });
       console.log("pr: ", pr);
@@ -37,10 +39,18 @@ export default function PaymentRequestForm() {
         }
       });
     }
-  }, [stripe]);
+  }, [stripe, amount]);
 
   if (paymentRequest) {
-    return <PaymentRequestButtonElement options={{ paymentRequest }} />;
+    return (
+      <div className="flex flex-col gap-2">
+        <PaymentRequestButtonElement options={{ paymentRequest }} />
+        <Input
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+        />
+      </div>
+    );
   }
 
   return <div className="text-red-500">Payment Request cannot be used.</div>;
