@@ -194,7 +194,7 @@ export function ElementsForm({
                   <FormControl>
                     <ToggleGroup
                       type="multiple"
-                      className="justify-start"
+                      className="justify-start flex-wrap"
                       value={field.value}
                       onValueChange={(value) => {
                         if (value) field.onChange(value);

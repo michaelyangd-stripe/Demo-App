@@ -28,7 +28,7 @@ export default function PaymentRequestForm() {
           amount: 1099,
         },
       });
-
+      console.log("pr: ", pr);
       // Check the availability of the Payment Request API.
       pr.canMakePayment().then((result) => {
         console.log(result);
