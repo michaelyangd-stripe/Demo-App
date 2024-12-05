@@ -7,7 +7,7 @@ import {
   updateStateData,
 } from "@/app/klarna/localstorage";
 
-const _RedirectPage = () => {
+const RedirectPageInner = () => {
   const searchParams = useSearchParams();
   const [textToShow, setTextToShow] = useState<string>(
     "Processing, please wait..."
@@ -50,7 +50,7 @@ const transferFocusAndCloseWindow = () => {
 const RedirectPage = () => {
   return (
     <Suspense>
-      <_RedirectPage />
+      <RedirectPageInner />
     </Suspense>
   );
 };
