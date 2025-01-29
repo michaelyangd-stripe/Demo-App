@@ -26,6 +26,9 @@ import { useActions } from "./hooks/useActions";
 import { LoaderIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { Toggle } from "@/components/ui/toggle";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Switch } from "@/components/ui/switch";
 
 interface BankDialogProps {
   isOpen: boolean;
@@ -40,6 +43,7 @@ export function BankDialog({
 }: BankDialogProps) {
   const [dialogStep, setDialogStep] = useState(1);
   const [consentChecked, setConsentChecked] = useState(false);
+  const [requireInstitutionLogin, setRequireInstitutionLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [url, setUrl] = useState<string | null>(null);
   const { toast } = useToast();
@@ -108,13 +112,17 @@ export function BankDialog({
     return null;
   }
 
-  const onInstitutionSelect = async (institutionId: string) => {
+  const onInstitutionSelect = async (
+    institutionId: string,
+    requireInstitutionLogin: boolean
+  ) => {
     setIsLoading(true);
     try {
       const stateId = generateStateId(customer.id);
       const session = await actions.createFinancialConnectionsSession({
         institutionId,
         stateId,
+        requireInstitutionLogin,
       });
 
       if (!session) {
@@ -175,7 +183,10 @@ export function BankDialog({
       });
       return;
     }
-    await onInstitutionSelect(customInstitutionId.value);
+    await onInstitutionSelect(
+      customInstitutionId.value,
+      requireInstitutionLogin
+    );
     // onNext();
   };
 
@@ -207,10 +218,10 @@ export function BankDialog({
             if (dialogStep === 1) {
               return (
                 <div>
-                  <p className="text-md text-muted-foreground">
+                  <span className="text-md text-muted-foreground">
                     Upgrade your Klarna experience and unlock a new way to pay
                     directly from your checking account.
-                  </p>
+                  </span>
                   <div className="flex flex-col text-sm py-4 px-4 space-y-4">
                     <span>
                       Verify your bank details and get an additional layer of
@@ -227,26 +238,44 @@ export function BankDialog({
             }
             if (dialogStep === 2) {
               return (
-                <div className="grid grid-cols-2 gap-4 overflow-auto py-4">
-                  {institutions.map((inst) => (
-                    <Button
-                      key={inst.id}
-                      variant={"outline"}
-                      className="flex flex-col h-min gap-x-2 w-11/12 mx-auto overflow-auto"
-                      onClick={() => onInstitutionSelect(inst.id)}
-                      disabled={isLoading}
+                <>
+                  <div className="w-full flex flex-row gap-2 justify-end items-center">
+                    <label
+                      className="text-sm"
+                      htmlFor="requireInstitutionLogin"
                     >
-                      <Image
-                        className="rounded-md"
-                        src={inst.imageUrl}
-                        alt={inst.name}
-                        width={50}
-                        height={50}
-                      />
-                      <span className="text-[0.7rem] mt-2">{inst.name}</span>
-                    </Button>
-                  ))}
-                </div>
+                      Require Login
+                    </label>
+                    <Switch
+                      name="requireInstitutionLogin"
+                      defaultChecked={false}
+                      checked={requireInstitutionLogin}
+                      onCheckedChange={(e) => setRequireInstitutionLogin(!!e)}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 overflow-auto py-2">
+                    {institutions.map((inst) => (
+                      <Button
+                        key={inst.id}
+                        variant={"outline"}
+                        className="flex flex-col h-min gap-x-2 w-11/12 mx-auto overflow-auto"
+                        onClick={() =>
+                          onInstitutionSelect(inst.id, requireInstitutionLogin)
+                        }
+                        disabled={isLoading}
+                      >
+                        <Image
+                          className="rounded-md"
+                          src={inst.imageUrl}
+                          alt={inst.name}
+                          width={50}
+                          height={50}
+                        />
+                        <span className="text-[0.7rem] mt-2">{inst.name}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </>
               );
             }
             if (dialogStep === 3) {
@@ -255,19 +284,21 @@ export function BankDialog({
                   Something went wrong with url generation
                 </DialogDescription>
               ) : (
-                <DialogDescription className="flex flex-col gap-2 justify-center items-center py-6">
-                  StateId: {stateIdToPoll}
-                  <LoaderIcon className="animate-spin" />
-                  <div className="flex flex-col gap-2">
-                    <p className="text-xs text-muted-foreground mt-4">
-                      {`If a window didn't open automatically, `}
-                      <span className="inline-block">
-                        <a href={url} target="_blank" className="underline">
-                          try opening it again
-                        </a>
-                        .
-                      </span>
-                    </p>
+                <DialogDescription asChild>
+                  <div className="flex flex-col gap-6 justify-center items-center py-6">
+                    StateId: {stateIdToPoll}
+                    <LoaderIcon className="animate-spin" />
+                    <div className="flex flex-col gap-2">
+                      <div className="text-xs text-muted-foreground mt-4">
+                        {`If a window didn't open automatically, `}
+                        <span className="inline-block">
+                          <a href={url} target="_blank" className="underline">
+                            try opening it again
+                          </a>
+                          .
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </DialogDescription>
               );
@@ -310,7 +341,7 @@ export function BankDialog({
                 <div className="space-y-2 w-full">
                   <form
                     onSubmit={onCustomInstitutionSubmit}
-                    className="w-full flex flex-row gap-x-6"
+                    className="w-full flex flex-row gap-6"
                   >
                     <Input
                       type="text"

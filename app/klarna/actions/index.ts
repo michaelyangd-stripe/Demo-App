@@ -94,23 +94,34 @@ export const getPaymentMethods = createApiFunction<
 
 export const createFinancialConnectionsSession = createApiFunction<
   Stripe.FinancialConnections.Session,
-  { customerId: string; institutionId: string; stateId: string }
->(async (stripe, { customerId, institutionId, stateId }) => {
-  const baseUrl = getBaseUrl();
-  return await stripe.financialConnections.sessions.create({
-    account_holder: {
-      type: "customer",
-      customer: customerId,
-    },
-    permissions: ["payment_method", "balances", "ownership", "transactions"],
-    ui_mode: "hosted",
-    // @ts-ignore
-    filters: { countries: ["US"], institution: institutionId },
-    hosted: {
-      return_url: `${baseUrl}/klarna/redirect?stateId=${stateId}`,
-    },
-  });
-});
+  {
+    customerId: string;
+    institutionId: string;
+    stateId: string;
+    requireInstitutionLogin: boolean;
+  }
+>(
+  async (
+    stripe,
+    { customerId, institutionId, stateId, requireInstitutionLogin }
+  ) => {
+    const baseUrl = getBaseUrl();
+    return await stripe.financialConnections.sessions.create({
+      account_holder: {
+        type: "customer",
+        customer: customerId,
+      },
+      permissions: ["payment_method", "balances", "ownership", "transactions"],
+      ui_mode: "hosted",
+      // @ts-ignore
+      filters: { countries: ["US"], institution: institutionId },
+      hosted: {
+        return_url: `${baseUrl}/klarna/redirect?stateId=${stateId}`,
+      },
+      ...(requireInstitutionLogin ? { require_institution_login: true } : {}),
+    });
+  }
+);
 
 export const getFinancialConnectionsSession = createApiFunction<
   Stripe.FinancialConnections.Session,
