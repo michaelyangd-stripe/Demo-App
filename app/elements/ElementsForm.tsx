@@ -73,6 +73,23 @@ export function ElementsForm({
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="useOnBehalfOf"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col items-center space-y-1">
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-[0.5rem]">
+                        Use OnBehalfOf
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
               </div>
               <FormField
                 control={form.control}

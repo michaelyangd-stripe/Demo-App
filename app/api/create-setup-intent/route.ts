@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
     : undefined;
 
   const returnUrl = data.returnUrl;
+  const useOnBehalfOf = data.useOnBehalfOf;
   // EXAMPLE REQUEST FROM RARE
   // {
   //   customer: "cus_PzZzrjzVY2doyT",
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
       // transfer_data: {
       //   destination: "acct_1NRIYOBOLg168MLu",
       // },
-      // on_behalf_of: "acct_1NRIYOBOLg168MLu",
+      ...(useOnBehalfOf && { on_behalf_of: "acct_1NRIYOBOLg168MLu" }),
     }
     // {
     //   stripeAccount: "acct_1NRIYOBOLg168MLu",

@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
       })
     : undefined;
   const returnUrl = data.returnUrl;
+  const useOnBehalfOf = data.useOnBehalfOf;
   // console.time("pi");
   // Create a PaymentIntent with the order amount and currency
   const paymentIntent = await stripe.paymentIntents.create(
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
       // transfer_data: {
       //   destination: "acct_1NRIYOBOLg168MLu",
       // },
-      // on_behalf_of: "acct_1NRIYOBOLg168MLu",
+      ...(useOnBehalfOf && { on_behalf_of: "acct_1NRIYOBOLg168MLu" }),
     }
     // {
     //   stripeAccount: "acct_1NRIYOBOLg168MLu",

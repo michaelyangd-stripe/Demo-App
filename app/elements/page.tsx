@@ -154,6 +154,7 @@ export default function App() {
           paymentMethodTypes: configFormData.paymentMethodTypes,
           livemode: configFormData.livemode,
           returnUrl: configFormData.returnUrl,
+          useOnBehalfOf: configFormData.useOnBehalfOf,
         }),
       });
       const { id, clientSecret } = await res.json();
@@ -194,6 +195,9 @@ export default function App() {
             },
           },
         },
+        ...(configFormData.useOnBehalfOf && {
+          on_behalf_of: "acct_1NRIYOBOLg168MLu",
+        }),
       };
     } else {
       if (clientSecret) {
@@ -206,7 +210,6 @@ export default function App() {
     options = {
       ...options,
       appearance,
-      // on_behalf_of: "acct_1NRIYOBOLg168MLu",
     };
   }
 
